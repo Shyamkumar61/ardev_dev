@@ -11,8 +11,6 @@ from apps.account.mixins import LoginMixin
 class LoginAPIView(LoginMixin,
                    GenericAPIView):
 
-    # serializer_class = LoginSerializer
-
     def post(self, request, *args, **kwargs):
         return self.login(request, *args, **kwargs)
 
@@ -35,16 +33,6 @@ class LoginView(LoginAPIView):
     serializer_class = LoginSerializer
     queryset = Account.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        return super().login(request, *args, **kwargs)
 
-# class LoginView(APIView):
-#
-#     def post(self, request):
-#         email = request.data['email']
-#         password = request.data['password']
-#         if email or password is None:
-#             return Response({'error': "Please Enter the Login Creditionals"})
-#         serializer = LoginSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             user = authenticate(email=email, password=password)
-#             if user is not None:
-#                 pass

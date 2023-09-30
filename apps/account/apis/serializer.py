@@ -80,7 +80,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=30, required=True,
                                    style={
                                        'input_type': 'text',
-                                       'placeholder': 'Last Name',
+                                       'placeholder': 'Enter your Email',
                                    })
     password = serializers.CharField(max_length=30, required=True,
                                      style={
