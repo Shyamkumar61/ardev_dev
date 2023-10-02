@@ -3,6 +3,10 @@ from django.contrib.auth import get_user_model
 from apps.account.models import Account
 from rest_framework.exceptions import ValidationError
 from apps.account.utils import generate_user
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
 
 User = get_user_model()
 
@@ -88,3 +92,26 @@ class LoginSerializer(serializers.Serializer):
                                         'placeholder': 'Enter your password',
                                         'class': 'custom-password-field',
                                      })
+
+
+class SendPasswordResetEmailSerializer(serializers.Serializer):
+
+    email = serializers.EmailField(max_length=30, write_only=True,
+                                   required=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        if email is not None:
+            if Account.objects.filter(email=email).exists():
+                user = Account.objects.get(email=email)
+                uid = urlsafe_base64_encode(force_bytes(user.id))
+                token = PasswordResetTokenGenerator().make_token(user)
+                link = 'http://127.0.0.1:8000/reset/' + uid + '/' + token
+                data = {
+                    'subject': 'Reset Your Password',
+                    'body': '',
+                    'to_email': user.email
+                }
+                return attrs
+            else:
+                raise serializers.ValidationError('You are not a Registered User')

@@ -36,3 +36,11 @@ class LoginView(LoginAPIView):
     def post(self, request, *args, **kwargs):
         return super().login(request, *args, **kwargs)
 
+
+# class SendPasswordResetEmailView(APIView):
+#
+#     def post(self, request):
+#         email = request.data['email']
+#         if email is not None:
+#             serializer = ""
+
