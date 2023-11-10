@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'Ardev_Tcs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ardev-dev-local',
+        'NAME': 'ardev_dev_local',
         'USER': 'postgres',
         'PASSWORD': 'shyam6132',
         'HOST': 'localhost',
