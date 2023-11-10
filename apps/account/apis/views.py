@@ -1,8 +1,7 @@
-from rest_framework.views import Response, Request, HttpResponseBase
-from rest_framework.views import APIView
+from rest_framework.views import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, GenericAPIView
 from rest_framework import status
-from .serializer import RegisterUserSerializer, LoginSerializer
+from .serializers import RegisterUserSerializer, LoginSerializer
 from apps.account.models import Account
 from django.contrib.auth import authenticate
 from apps.account.mixins import LoginMixin

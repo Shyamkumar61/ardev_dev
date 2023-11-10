@@ -6,22 +6,52 @@ from autoslug import AutoSlugField
 
 class Services(TimeStampedModel):
 
-    service_name = models.CharField(max_length=50)
+    service_name = models.CharField(max_length=50, db_index=True)
+    is_active = models.BooleanField(default=True)
     slug = AutoSlugField(max_length=20, populate_from='service_name')
+
+    objects = models.Manager
 
     class Meta:
         verbose_name = 'Service'
         verbose_name_plural = 'Service'
+
+    def __str__(self):
+        return self.service_name
 
 
 class Designation(TimeStampedModel):
 
     service = models.ForeignKey(Services, on_delete=models.CASCADE, related_name='designations')
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, db_index=True)
+    is_active = models.BooleanField(default=True)
     slug = AutoSlugField(max_length=50, populate_from='name')
 
+    objects = models.Manager
+
     class Meta:
-        verbose_name = 'Service'
-        verbose_name_plural = 'Service'
+        verbose_name = 'Designation'
+        verbose_name_plural = 'Designation'
+
+    def __str__(self):
+        return self.name
 
 
+class Banks(TimeStampedModel):
+
+    bank_name = models.CharField(unique=True, max_length=100)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Bank'
+        verbose_name_plural = 'Bank'
+
+    def __str__(self):
+        return self.bank_name
+
+    def save(self, *args, **kwargs):
+        self.bank_name = self.bank_name.upper()
+        super().save(*args, **kwargs)
+
+
+        
