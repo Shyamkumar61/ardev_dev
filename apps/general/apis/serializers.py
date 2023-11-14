@@ -9,8 +9,15 @@ def validate_name(value):
     return value
 
 
+class ServiceOptionSerializer(serializers.Serializer):
+
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    value = serializers.CharField(source='service_name', read_only=True)
+
+
 class ServiceSerializer(serializers.Serializer):
 
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     service_name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
 
     def validate(self, data):
@@ -31,7 +38,7 @@ class ServiceSerializer(serializers.Serializer):
 
 class DesignationSerializer(serializers.Serializer):
 
-    service = serializers.PrimaryKeyRelatedField(read_only=True)
+    service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.only('id'))
     name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
 
     def validate(self, attrs):
@@ -41,8 +48,27 @@ class DesignationSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        designation = Designation.objects.create(service=validated_data['service'], name=validated_data['name'])
-        return designation
+        try:
+            service = Services.objects.get(id=validated_data['service'].id)
+            designation = Designation.objects.create(service=service.id, name=validated_data['name'])
+            return designation
+        except Exception as e:
+            raise ValidationError({"success": False, "data": str(e)})
+
+    def update(self, instance, validated_data):
+        try:
+            service = Services.objects.get(id=validated_data['service'].id)
+            instance.service = service
+            instance.name = validated_data['name']
+            instance.save()
+            return instance
+        except Exception as e:
+            raise ValidationError({"success": False, "data": str(e)})
+
+    def to_representation(self, instance):
+        respresent = super().to_representation(instance)
+        respresent['service'] = [{"id": instance.service.id, "service_name": instance.service.service_name}]
+        return respresent
 
 
 class EmployeeDesignation(serializers.ModelSerializer):

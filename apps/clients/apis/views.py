@@ -9,7 +9,8 @@ from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from apps.clients.filters import ClientFilter
 
-class CustomPagenation(PageNumberPagination):
+
+class CustomPagination(PageNumberPagination):
     page_size = 10
     page_query_param = 'page_size'
 
@@ -31,7 +32,7 @@ class ClientListView(generics.ListAPIView):
 
     queryset = Client.objects.only('client_name', 'sector', 'client_phone').all()
     serializer_class = ClientListSerializer
-    pagination_class = CustomPagenation
+    pagination_class = CustomPagination
     filter_class = ClientFilter
 
     def list(self, request, *args, **kwargs):
