@@ -66,7 +66,7 @@ class Employee(TimeStampedModel):
     pcc_image = models.ImageField(blank=True, null=True, upload_to='emp_pcc/')
     aadhar_image = models.ImageField(blank=True, null=True, upload_to='emp_aadhar/')
     bank_passbook = models.ImageField(blank=True, null=True, upload_to='emp_passbook/')
-
+    is_actice = models.BooleanField(default=True)
     objects = models.Manager
 
     class Meta:

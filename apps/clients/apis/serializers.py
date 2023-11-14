@@ -5,8 +5,16 @@ from apps.general.models import Services, Designation
 from apps.employees.apis.serializers import EmployeeListSerializer
 
 
+class ClientEmployeeList(serializers.ModelSerializer):
+
+    class Meta:
+        model = Employee
+        fields = ['emp_id', 'name', 'designation', 'phone_no']
+
+
 class ClientSerializer(serializers.ModelSerializer):
 
+    employee_company = ClientEmployeeList(many=True, read_only=True, required=False)
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.all(), many=True)
     designation = serializers.PrimaryKeyRelatedField(queryset=Designation.objects.all(), many=True)
 
@@ -14,13 +22,10 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         exclude = ('created', 'modified')
 
-    def get_employee(self, obj):
-        if self.context.get('hide_employee', True):
-            return None
-        else:
-            return EmployeeListSerializer(obj.employee, many=True, context=self.context).data
-
     def to_representation(self, instance):
+        hide_relationship = self.context.get('hide_relationship', True)
+        if hide_relationship and 'employee_company' in self.fields:
+            del self.fields['employee_company']
         represent = super().to_representation(instance)
         represent['service'] = [{'id': value.id, 'name': value.service_name} for value in instance.service.all()]
         represent['designation'] = [{'id': value.id, 'name': value.name} for value in instance.designation.all()]
