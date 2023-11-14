@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'ardev_local',
         'USER': 'postgres',
         'PASSWORD': '@U&s"10@LvN3',
-        'HOST': '3.108.49.239',
+        'HOST': 'localhost',
         'PORT': '5432'
     }
 }
