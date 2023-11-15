@@ -19,6 +19,7 @@ class ServiceSerializer(serializers.Serializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     service_name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
+    is_active = serializers.BooleanField(default=True)
 
     def validate(self, data):
         service_name = data.get('service_name')
@@ -40,6 +41,7 @@ class DesignationSerializer(serializers.Serializer):
 
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.only('id'))
     name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
+    is_active = serializers.BooleanField(default=True)
 
     def validate(self, attrs):
         name = attrs.get('name')
