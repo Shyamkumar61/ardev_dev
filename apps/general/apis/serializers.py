@@ -39,6 +39,9 @@ class ServiceSerializer(serializers.Serializer):
 
 class DesignationSerializer(serializers.Serializer):
 
+    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.only('id'))
     name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
     is_active = serializers.BooleanField(default=True)
