@@ -39,7 +39,7 @@ class Client(TimeStampedModel):
     sector = models.CharField(choices=SECTOR_CHOICES, max_length=20)
     client_gst = models.CharField(max_length=255, blank=True, null=True)
     contract_singed = models.DateField(blank=True, null=True)
-    contract_period = models.DateTimeField(blank=True, null=True)
+    contract_period = models.DateField(blank=True, null=True)
     client_email = models.EmailField(null=True, blank=True)
     client_phone = models.CharField(max_length=20, null=True, blank=True)
     client_address = models.TextField(null=True, blank=True)
