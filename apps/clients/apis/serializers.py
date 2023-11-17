@@ -11,6 +11,11 @@ class ClientEmployeeList(serializers.ModelSerializer):
         model = Employee
         fields = ['emp_id', 'name', 'designation', 'phone_no']
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['designation'] = instance.designation.name
+        return response
+
 
 class ClientSerializer(serializers.ModelSerializer):
 

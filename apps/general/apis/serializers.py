@@ -69,7 +69,7 @@ class DesignationSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         respresent = super().to_representation(instance)
-        respresent['service'] = [{"id": instance.service.id, "service_name": instance.service.service_name}]
+        respresent['service'] = instance.service.service_name
         return respresent
 
 
