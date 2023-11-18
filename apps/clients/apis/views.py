@@ -91,6 +91,8 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid()
+            serializer.save()
             return Response({"success": True, "data": serializer.data})
         except Exception as e:
             return Response({"success": False, "data": str(e)})
@@ -99,6 +101,8 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid()
+            serializer.save()
             return Response({"success": True, "data": serializer.data})
         except Exception as e:
             return Response({"success": False, "data": str(e)})
