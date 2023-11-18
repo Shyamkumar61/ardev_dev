@@ -87,15 +87,19 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
         except Exception as e:
             return Response({"success": False, "data": str(e)})
 
-    def update(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data)
-            serializer.is_valid()
-            serializer.save()
-            return Response({"success": True, "data": serializer.data})
-        except Exception as e:
-            return Response({"success": False, "data": str(e)})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+    # def update(self, request, *args, **kwargs):
+    #     try:
+    #         instance = self.get_object()
+    #         serializer = self.get_serializer(instance, data=request.data)
+    #         print(serializer.errors)
+    #         serializer.is_valid()
+    #         serializer.save()
+    #         return Response({"success": True, "data": serializer.data})
+    #     except Exception as e:
+    #         
+    #         return Response({"success": False, "data": str(e)})
 
     def partial_update(self, request, *args, **kwargs):
         try:
