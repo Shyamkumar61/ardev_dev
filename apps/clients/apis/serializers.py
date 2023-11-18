@@ -38,7 +38,7 @@ class ClientSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         services = validated_data.pop('service')
-        designations = validated_data.pop('designations')
+        designations = validated_data.pop('designation')
         client = Client.objects.create(**validated_data)
         client.service.set(*services)
         client.service.set(*designations)
