@@ -100,27 +100,27 @@ WSGI_APPLICATION = 'Ardev_Tcs.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ardev_local',
-        'USER': 'postgres',
-        'PASSWORD': '@U&s"10@LvN3',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ardev-dev-local',
+#         'NAME': 'ardev_local',
 #         'USER': 'postgres',
-#         'PASSWORD': 'shyam6132',
+#         'PASSWORD': '@U&s"10@LvN3',
 #         'HOST': 'localhost',
 #         'PORT': '5432'
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ardev-dev-local',
+        'USER': 'postgres',
+        'PASSWORD': 'shyam6132',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -189,10 +189,12 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/images/'
 
 # STORAGES = {
-#      "staticfiles": {
+#     "default": "django.core.files.storage.FileSystemStorage",
+#     "staticfiles": {
 #         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-#      },
+#     },
 # }
+
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
