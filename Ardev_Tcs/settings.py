@@ -28,9 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '3.108.49.239']
 
-CSRF_TRUSTED_ORIGINS = ["https://ardevtcs.in", "http://3.108.49.239", "http://127.0.0.1:5173"]
+CSRF_TRUSTED_ORIGINS = ["http://3.108.49.239", "http://127.0.0.1:5173"]
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
@@ -57,8 +57,11 @@ INSTALLED_APPS = [
     'apps.clients'
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,6 +69,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend/dist/static'),
+    os.path.join(BASE_DIR, 'static/') # Path to the Vite build output directory
 ]
 
 ROOT_URLCONF = 'Ardev_Tcs.urls'
@@ -92,27 +100,27 @@ WSGI_APPLICATION = 'Ardev_Tcs.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ardev_local',
-        'USER': 'postgres',
-        'PASSWORD': '@U&s"10@LvN3',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ardev-dev-local',
+#         'NAME': 'ardev_local',
 #         'USER': 'postgres',
-#         'PASSWORD': 'shyam6132',
+#         'PASSWORD': '@U&s"10@LvN3',
 #         'HOST': 'localhost',
 #         'PORT': '5432'
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ardev-dev-local',
+        'USER': 'postgres',
+        'PASSWORD': 'shyam6132',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -139,6 +147,10 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication"
     ]
 }
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
@@ -176,7 +188,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/images/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR), 'frontend/dist/static']
+STORAGES = {
+     "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+     },
+}
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
