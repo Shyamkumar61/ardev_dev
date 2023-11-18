@@ -36,13 +36,13 @@ class ClientSerializer(serializers.ModelSerializer):
         represent['designation'] = [{'id': value.id, 'name': value.name} for value in instance.designation.all()]
         return represent
 
-    def create(self, validated_data):
-        services = validated_data.pop('service')
-        designations = validated_data.pop('designation')
-        client = Client.objects.create(**validated_data)
-        client.service.set(*services)
-        client.service.set(*designations)
-        return client
+    # def create(self, validated_data):
+    #     services = validated_data.pop('service')
+    #     designations = validated_data.pop('designation')
+    #     client = Client.objects.create(**validated_data)
+    #     client.service.set(*services)
+    #     client.service.set(*designations)
+    #     return client
 
 
 class ClientListSerializer(serializers.Serializer):
