@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from apps.clients.models import Client
 from rest_framework import generics
-from .serializers import ClientSerializer, ClientListSerializer
+from .serializers import ClientSerializer, ClientListSerializer, ShiftEmployee
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
@@ -89,6 +89,7 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
+
     # def update(self, request, *args, **kwargs):
     #     try:
     #         instance = self.get_object()

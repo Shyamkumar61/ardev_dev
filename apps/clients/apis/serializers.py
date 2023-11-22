@@ -3,6 +3,7 @@ from apps.clients.models import Client
 from apps.employees.models import Employee
 from apps.general.models import Services, Designation
 from apps.employees.apis.serializers import EmployeeListSerializer
+from apps.employees.models import ShiftEmployee
 
 
 class ClientEmployeeList(serializers.ModelSerializer):
@@ -70,4 +71,11 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Services
         fields = ['id', 'service_name']
+
+
+class ShiftEmpSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ShiftEmployee
+        fields = '__all__'
 

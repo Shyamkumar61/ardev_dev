@@ -59,14 +59,17 @@ class Employee(TimeStampedModel):
     aadhar = models.CharField(max_length=20, unique=True)
     pan_card = models.CharField(max_length=30, blank=True, null=True)
     esiNumber = models.CharField(max_length=30, blank=True, null=True)
-    dob = models.DateTimeField(blank=True, null=True)
-    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, related_name='employee', blank=True, null=True)
-    current_company = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='employee_company', blank=True, null=True)
-    profile_img = models.ImageField(blank=True, null=True, upload_to='user_profile/', )
+    dob = models.DateField(blank=True, null=True)
+    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, related_name='employee', blank=True,
+                                    null=True)
+    current_company = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='employee_company', blank=True,
+                                        null=True)
+    joining_date = models.DateField(auto_now_add=True)
+    profile_img = models.ImageField(blank=True, null=True, upload_to='user_profile/')
     pcc_image = models.ImageField(blank=True, null=True, upload_to='emp_pcc/')
     aadhar_image = models.ImageField(blank=True, null=True, upload_to='emp_aadhar/')
     bank_passbook = models.ImageField(blank=True, null=True, upload_to='emp_passbook/')
-    is_actice = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     objects = models.Manager
 
     class Meta:
@@ -126,3 +129,39 @@ class EmployeeBank(TimeStampedModel):
 
     def __str__(self):
         return self.employee.name
+
+
+class EmployeeHistory(TimeStampedModel):
+
+    emp_id = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="emp_history")
+    prev_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
+                                     related_name="worked_company")
+    joined_date = models.DateField()
+    last_worked = models.DateField()
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.emp_id} - {self.prev_company}"
+
+    class Meta:
+        verbose_name = 'Employee History'
+        verbose_name_plural = 'Employee History'
+
+
+class ShiftEmployee(TimeStampedModel):
+
+    emp_id = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="shift_emp")
+    prev_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
+                                     related_name="prev_company")
+    current_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
+                                        related_name="current_company")
+    from_date = models.DateField(auto_now_add=True)
+    to_date = models.DateField()
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.emp_id} - {self.prev_company}"
+
+    class Meta:
+        verbose_name = 'Shifted Employee'
+        verbose_name_plural = 'Shifted Employee'

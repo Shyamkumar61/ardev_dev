@@ -81,7 +81,8 @@ ROOT_URLCONF = 'Ardev_Tcs.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend/dist'],
+        'DIRS': [BASE_DIR / 'frontend/dist',
+                 BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,8 +145,12 @@ AUTH_USER_MODEL = 'account.Account'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication"
-    ]
+    ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     "rest_framework.permissions.IsAuthenticated"
+    # ]
 }
 
 CSRF_COOKIE_NAME = 'csrftoken'

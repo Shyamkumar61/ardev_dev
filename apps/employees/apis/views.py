@@ -8,13 +8,17 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser
 from PIL import Image as PILImage
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from apps.clients.apis.views import CustomPagination
+from apps.employees.filters import EmployeeFilter
 
 
 class EmployeeView(generics.ListCreateAPIView):
 
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    parser_classes = [MultiPartParser]
+    pagination_class = CustomPagination
+    filter_class = EmployeeFilter
+    # parser_classes = [MultiPartParser]
 
     def get_queryset(self):
         queryset = Employee.objects.only("name", "designation__name", "emp_id", "phone_no",
@@ -23,8 +27,12 @@ class EmployeeView(generics.ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = EmployeeListSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        filter_set = self.filter_class(request.GET, self.get_queryset())
+        if filter_set.is_valid():
+            queryset = filter_set.qs
+        page = self.paginate_queryset(queryset)
+        serializer = EmployeeListSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -80,3 +80,8 @@ class EmployeeDesignation(serializers.ModelSerializer):
         model = Designation
         fields = ['id', 'name']
 
+
+class BankSerializer(serializers.Serializer):
+
+    bank_name = serializers.CharField(required=True)
+

@@ -22,7 +22,7 @@ class EmployeeBankSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployeeBank
-        fields = ('bank', 'employee', 'accountNumber', 'ifscCode')
+        fields = ('bank', 'accountNumber', 'ifscCode')
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -37,6 +37,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
     pcc_image = serializers.ImageField(required=False, validators=[_image_format_validation])
     aadhar_image = serializers.ImageField(required=False, validators=[_image_format_validation])
 
+    def __init__(self, *args, **kwargs):
+        request = kwargs['context']['request'] if 'context' in kwargs and 'request' in kwargs['context'] else None
+        if request and (request.method == "PUT" or request.method == "PATCH"):
+            self.Meta.exclude = ('current_company', 'created', 'modified')
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = Employee
         exclude = ('created', 'modified')
@@ -47,7 +53,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return value
 
     def validate_aadhar(self, value):
-        if len(value) < 16:
+        if len(value) < 12:
             raise ValidationError("Please Enter the Correct Aadhar Number")
         elif value.isalpha():
             raise ValidationError("No Characters are Allowed")
@@ -60,6 +66,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return attrs
             
     def create(self, validated_data):
+        print(validated_data)
         bank_details = validated_data.pop('emp_bank', [])
         employee = Employee.objects.create(**validated_data)
         for bank_detail in bank_details:
@@ -104,7 +111,6 @@ class EmployeeListSerializer(serializers.Serializer):
     current_company = serializers.SlugRelatedField(read_only=True, slug_field='client_name')
 
 
-class EmployeeDetailSerializer(serializers.ModelSerializer): ...
 
 
 
