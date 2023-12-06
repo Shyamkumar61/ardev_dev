@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from apps.general.models import Services, Designation, Banks
 from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
 
 
 def validate_name(value):
@@ -81,7 +82,26 @@ class EmployeeDesignation(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class BankOptionSerializer(serializers.ModelSerializer):
+
+    value = serializers.IntegerField(source='id')
+    label = serializers.CharField(source='bank_name')
+
+    class Meta:
+        model = Banks
+        fields = ('value', 'label')
+
+
 class BankSerializer(serializers.Serializer):
 
     bank_name = serializers.CharField(required=True)
 
+    def create(self, validated_data):
+        bank_name = validated_data.get('bank_name')
+        try:
+            return Banks.objects.create(bank_name=bank_name)
+        except IntegrityError as e:
+            if 'unique constraint' in str(e).lower():
+                raise ValidationError({"error": "Bank Already Existes"})
+            else:
+                raise ValidationError(str(e))

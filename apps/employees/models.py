@@ -64,7 +64,7 @@ class Employee(TimeStampedModel):
                                     null=True)
     current_company = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='employee_company', blank=True,
                                         null=True)
-    joining_date = models.DateField(auto_now_add=True)
+    joining_date = models.DateField()
     profile_img = models.ImageField(blank=True, null=True, upload_to='user_profile/')
     pcc_image = models.ImageField(blank=True, null=True, upload_to='emp_pcc/')
     aadhar_image = models.ImageField(blank=True, null=True, upload_to='emp_aadhar/')
@@ -136,9 +136,11 @@ class EmployeeHistory(TimeStampedModel):
     emp_id = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="emp_history")
     prev_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
                                      related_name="worked_company")
-    joined_date = models.DateField()
-    last_worked = models.DateField()
-    is_active = models.BooleanField(default=False)
+    joined_date = models.DateField(blank=True, null=True)
+    last_worked = models.DateField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.emp_id} - {self.prev_company}"
@@ -147,17 +149,29 @@ class EmployeeHistory(TimeStampedModel):
         verbose_name = 'Employee History'
         verbose_name_plural = 'Employee History'
 
+    def save(self, **kwargs):
+        self.prev_company = self.emp_id.current_company
+        super().save(**kwargs)
+
+    def save_history(self, emp_id, prev_company, joined_date, last_worked):
+        self.emp_id = emp_id
+        self.prev_company = prev_company
+        self.joined_date = joined_date
+        self.last_worked = last_worked
+        self.is_active = True
+        self.save()
+
 
 class ShiftEmployee(TimeStampedModel):
 
     emp_id = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="shift_emp")
     prev_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
                                      related_name="prev_company")
-    current_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
+    shifted_company = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True,
                                         related_name="current_company")
-    from_date = models.DateField(auto_now_add=True)
-    to_date = models.DateField()
-    is_active = models.BooleanField(default=False)
+    from_date = models.DateField()
+    to_date = models.DateField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.emp_id} - {self.prev_company}"
@@ -165,3 +179,9 @@ class ShiftEmployee(TimeStampedModel):
     class Meta:
         verbose_name = 'Shifted Employee'
         verbose_name_plural = 'Shifted Employee'
+
+    def save(self, **kwargs):
+        self.prev_company = self.emp_id.current_company
+        self.is_active = True
+        return super().save(**kwargs)
+    

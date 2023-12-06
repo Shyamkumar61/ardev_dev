@@ -40,7 +40,10 @@ class Designation(TimeStampedModel):
 class Banks(TimeStampedModel):
 
     bank_name = models.CharField(unique=True, max_length=100)
+    slug = AutoSlugField(populate_from='bank_name')
     is_active = models.BooleanField(default=True)
+
+    objects = models.Manager()
 
     class Meta:
         verbose_name = 'Bank'

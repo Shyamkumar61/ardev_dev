@@ -1,13 +1,17 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from apps.clients.models import Client
+from apps.employees.models import Employee
+from apps.employees.apis.serializers import EmployeeSerializer
 from rest_framework import generics
 from .serializers import ClientSerializer, ClientListSerializer, ShiftEmployee
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from apps.clients.filters import ClientFilter
+from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit
 
 
 class CustomPagination(PageNumberPagination):
@@ -47,17 +51,7 @@ class ClientListView(generics.ListAPIView):
                 return self.get_paginated_response(serializer.data)
         except Exception as e:
             return Response({"success": False, "data": str(e)})
-
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #     print(queryset)
-    #     page = self.paginate_queryset(queryset)
-    #     if page is not None:
-    #         serializer = self.get_serializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
-    #     response = self.get_serializer(queryset, many=True)
-    #     return Response({"success": True, "data": response.data})
-
+        
 
 class ClientCreateView(generics.ListCreateAPIView):
     queryset = Client.objects.all()
@@ -90,18 +84,6 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
 
-    # def update(self, request, *args, **kwargs):
-    #     try:
-    #         instance = self.get_object()
-    #         serializer = self.get_serializer(instance, data=request.data)
-    #         print(serializer.errors)
-    #         serializer.is_valid()
-    #         serializer.save()
-    #         return Response({"success": True, "data": serializer.data})
-    #     except Exception as e:
-    #         
-    #         return Response({"success": False, "data": str(e)})
-
     def partial_update(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -113,12 +95,35 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
             return Response({"success": False, "data": str(e)})
 
 
-class ProfileList(APIView):
+class EmployeeShiftSerializer(generics.GenericAPIView):
 
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "profile_list.html"
+    serializer_class = ShiftEmpSerializer
 
-    def get(self, request):
-        queryset = Client.objects.get(id=1)
-        return Response({'profile': queryset})
+    def post(self, request, *args, **kwargs):
+        shift_type = request.data.get('shift_type')
+        if shift_type == 'Temporary':
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({"success": True, "data": serializer.data})
+        elif shift_type == 'Permenent':
+            serializer = EmployeeCompanyEdit(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({"success": True, "data": "Employee Shifted Successfull"})
+        return Response({'success': False, "data": "Invalid Shift Type"})
 
+
+class ShiftEmployeeList(generics.ListAPIView):
+
+    queryset = ShiftEmployee.objects.all()
+    serializer_class = ShiftEmpSerializer
+    pagination_class = CustomPagination
+
+
+class ShiftEmployeeDetails(generics.GenericAPIView):
+
+    def put(self, request, *args, **kwargs):
+        queryset = get_object_or_404(ShiftEmployee, id=id)
+        queryset.is_active = False
+        return Response({"success": True, "data": "Employee Shift Status Disabled"})

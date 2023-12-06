@@ -4,6 +4,9 @@ from apps.employees.models import Employee
 from apps.general.models import Services, Designation
 from apps.employees.apis.serializers import EmployeeListSerializer
 from apps.employees.models import ShiftEmployee
+from apps.employees.models import ShiftEmployee, EmployeeHistory
+from django.db import transaction
+from datetime import datetime, timedelta
 
 
 class ClientEmployeeList(serializers.ModelSerializer):
@@ -75,7 +78,48 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class ShiftEmpSerializer(serializers.ModelSerializer):
 
+    Permenent = 'Permenent'
+    Temporary = 'Temporary'
+
+    shift_choice = (
+        (Permenent, 'Permenent'),
+        (Temporary, 'Temporary')
+    )
+
+    shift_type = serializers.ChoiceField(choices=shift_choice, write_only=True)
+
     class Meta:
         model = ShiftEmployee
         fields = '__all__'
+
+    def save(self, **kwargs):
+        shift_type = self.validated_data.pop('shift_type')
+        data = super().save(**kwargs)
+        return data
+
+
+
+class EmployeeCompanyEdit(serializers.Serializer):
+
+    emp_id = serializers.CharField(required=True, write_only=True)
+    from_date = serializers.DateField()
+    shifted_company = serializers.IntegerField(write_only=True, required=True)
+
+    def save(self, **kwargs):
+        shift_type = self.validated_data.pop('shift_type')
+        emp_id = self.validated_data.get('emp_id')
+        company_id = self.validated_data.get('shifted_company')
+        try:
+            emp_instance = Employee.objects.get(emp_id=emp_id)
+            client_instance = Client.objects.get(id=company_id)
+            emp_history = EmployeeHistory.objects.create(emp_id=emp_instance,
+                                                         joined_date=self.validated_data.get('from_date'),
+                                                         prev_company=emp_instance.current_company,
+                                                         last_worked=self.validated_data.get('from_date') - timedelta(days=1))
+            emp_instance.current_company = client_instance
+            emp_instance.joining_date = self.validated_data.get('from_date')
+            emp_instance.save()
+            return emp_history
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
 
