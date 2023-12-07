@@ -126,8 +126,8 @@ class EmployeeCompanyEdit(serializers.Serializer):
 
 class clientOptionSerializer(serializers.ModelSerializer):
 
-    value = serializers.IntegerField(source=id)
-    label = serializers.CharField(source='client_name')
+    value = serializers.IntegerField(source='id')
+    label = serializers.CharField(source='bank_name')
 
     class Meta:
         model = Client

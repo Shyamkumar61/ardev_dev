@@ -134,6 +134,6 @@ class ClientOptionView(generics.GenericAPIView):
     queryset = Client.objects.all()
     serializer_class = clientOptionSerializer
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(self.get_queryset(), many=True)
         return Response(serializer.data)
