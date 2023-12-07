@@ -1,10 +1,12 @@
 from rest_framework.views import Response
+from rest_framework.views import  APIView
 from rest_framework import generics
 from rest_framework import status
 from .serializers import ServiceSerializer, DesignationSerializer, ServiceOptionSerializer, BankSerializer, \
     BankOptionSerializer
 from apps.general.models import Services, Designation, Banks
 from apps.clients.apis.views import CustomPagination
+from rest_framework.renderers import TemplateHTMLRenderer
 
 
 class ServiceListView(generics.ListCreateAPIView):

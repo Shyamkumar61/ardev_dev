@@ -11,7 +11,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from apps.clients.filters import ClientFilter
-from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit
+from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit, clientOptionSerializer
 
 
 class CustomPagination(PageNumberPagination):
@@ -127,3 +127,13 @@ class ShiftEmployeeDetails(generics.GenericAPIView):
         queryset = get_object_or_404(ShiftEmployee, id=id)
         queryset.is_active = False
         return Response({"success": True, "data": "Employee Shift Status Disabled"})
+
+
+class ClientOptionView(generics.GenericAPIView):
+
+    queryset = Client.objects.all()
+    serializer_class = clientOptionSerializer
+
+    def get(self, request):
+        serializer = self.serializer_class(self.get_queryset(), many=True)
+        return Response(serializer.data)

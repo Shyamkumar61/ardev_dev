@@ -40,7 +40,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         request = kwargs['context']['request'] if 'context' in kwargs and 'request' in kwargs['context'] else None
         if request and (request.method == "PUT" or request.method == "PATCH"):
-            self.Meta.exclude = ('current_company', 'created', 'modified')
+            self.Meta.exclude = ('created', 'modified')
         super().__init__(*args, **kwargs)
 
     class Meta:

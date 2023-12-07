@@ -10,5 +10,5 @@ urlpatterns = [
     path('designation-list/', views.DesignationView.as_view()),
     path('designation-detail/<int:id>/', views.DesignationDetailView.as_view()),
     path('bank-options-list/', views.BankOptionView.as_view()),
-    path('banks/', views.BankView.as_view())
+    path('banks/', views.BankView.as_view()),
 ]

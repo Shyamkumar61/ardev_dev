@@ -123,3 +123,12 @@ class EmployeeCompanyEdit(serializers.Serializer):
         except Exception as e:
             raise serializers.ValidationError(str(e))
 
+
+class clientOptionSerializer(serializers.ModelSerializer):
+
+    value = serializers.IntegerField(source=id)
+    label = serializers.CharField(source='client_name')
+
+    class Meta:
+        model = Client
+        fields = ('value', 'label')
