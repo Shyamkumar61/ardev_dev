@@ -6,12 +6,13 @@ from apps.clients.models import Client
 from apps.employees.models import Employee
 from apps.employees.apis.serializers import EmployeeSerializer
 from rest_framework import generics
-from .serializers import ClientSerializer, ClientListSerializer, ShiftEmployee
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from apps.clients.filters import ClientFilter
-from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit, clientOptionSerializer
+from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit, clientOptionSerializer, \
+                        ClientSerializer, ClientListSerializer, ShiftEmployee, ShiftEmpListSerializer
+from apps.clients.mixins import OptionMixin
 
 
 class CustomPagination(PageNumberPagination):
@@ -61,7 +62,7 @@ class ClientCreateView(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class ClientDetailView(generics.RetrieveUpdateAPIView):
+class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
@@ -95,7 +96,7 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
             return Response({"success": False, "data": str(e)})
 
 
-class EmployeeShiftSerializer(generics.GenericAPIView):
+class EmployeeShiftView(generics.GenericAPIView):
 
     serializer_class = ShiftEmpSerializer
 
@@ -116,24 +117,25 @@ class EmployeeShiftSerializer(generics.GenericAPIView):
 
 class ShiftEmployeeList(generics.ListAPIView):
 
-    queryset = ShiftEmployee.objects.all()
-    serializer_class = ShiftEmpSerializer
+    queryset = ShiftEmployee.objects.filter(is_active=True)
+    serializer_class = ShiftEmpListSerializer
     pagination_class = CustomPagination
 
 
 class ShiftEmployeeDetails(generics.GenericAPIView):
 
-    def put(self, request, *args, **kwargs):
-        queryset = get_object_or_404(ShiftEmployee, id=id)
+    def get(self, request, *args, **kwargs):
+        queryset = get_object_or_404(ShiftEmployee, id=60)
+        emp_instance = queryset.emp_id
+        emp_instance.current_company = queryset.prev_company
         queryset.is_active = False
+        queryset.save()
+        emp_instance.save()
         return Response({"success": True, "data": "Employee Shift Status Disabled"})
 
 
-class ClientOptionView(generics.GenericAPIView):
+class ClientOptionView(OptionMixin, generics.GenericAPIView):
 
     queryset = Client.objects.all()
     serializer_class = clientOptionSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(self.get_queryset(), many=True)
-        return Response(serializer.data)

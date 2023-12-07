@@ -7,6 +7,7 @@ from .serializers import ServiceSerializer, DesignationSerializer, ServiceOption
 from apps.general.models import Services, Designation, Banks
 from apps.clients.apis.views import CustomPagination
 from rest_framework.renderers import TemplateHTMLRenderer
+from apps.clients.mixins import OptionMixin
 
 
 class ServiceListView(generics.ListCreateAPIView):
@@ -36,31 +37,23 @@ class DesignationView(generics.ListCreateAPIView):
     pagination_class = CustomPagination
 
 
-class DesignationDetailView(generics.RetrieveUpdateAPIView):
+class DesignationDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Designation.objects.all()
     serializer_class = DesignationSerializer
     lookup_field = 'id'
 
 
-class DesignationOptionView(generics.GenericAPIView):
+class DesignationOptionView(OptionMixin, generics.GenericAPIView):
 
     queryset = Designation.objects.all()
     serializer_class = DesignationOptionSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(self.get_queryset(), many=True)
-        return Response(serializer.data)
 
-
-class BankOptionView(generics.GenericAPIView):
+class BankOptionView(OptionMixin, generics.GenericAPIView):
 
     queryset = Banks.objects.all()
     serializer_class = BankOptionSerializer
-
-    def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(self.get_queryset(), many=True)
-        return Response(serializer.data)
 
 
 class BankView(generics.CreateAPIView):

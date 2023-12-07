@@ -7,6 +7,7 @@ from apps.employees.models import ShiftEmployee
 from apps.employees.models import ShiftEmployee, EmployeeHistory
 from django.db import transaction
 from datetime import datetime, timedelta
+from rest_framework.exceptions import ValidationError
 
 
 class ClientEmployeeList(serializers.ModelSerializer):
@@ -92,11 +93,24 @@ class ShiftEmpSerializer(serializers.ModelSerializer):
         model = ShiftEmployee
         fields = '__all__'
 
+    def validate(self, attrs):
+        emp_id = attrs.get('emp_id')
+        instance = ShiftEmployee.objects.filter(emp_id=emp_id, is_active=True)
+        if instance:
+            raise ValidationError({'error': "Employee Already On a Shift Please Change It"})
+        return attrs
+
     def save(self, **kwargs):
         shift_type = self.validated_data.pop('shift_type')
-        data = super().save(**kwargs)
-        return data
-
+        emp_instance = self.validated_data.get('emp_id')
+        com_instance = self.validated_data.get('shifted_company')
+        try:
+            data = super().save(**kwargs)
+            emp_instance.current_company = com_instance
+            emp_instance.save()
+            return data
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
 
 
 class EmployeeCompanyEdit(serializers.Serializer):
@@ -132,3 +146,17 @@ class clientOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ('value', 'label')
+
+
+class ShiftEmpListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ShiftEmployee
+        fields = ['id', 'emp_id', 'prev_company', 'shifted_company', 'from_date', 'to_date']
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['emp_id'] = instance.emp_id.name
+        response['prev_company'] = instance.prev_company.client_name
+        response['shifted_company'] = instance.shifted_company.client_name
+        return response

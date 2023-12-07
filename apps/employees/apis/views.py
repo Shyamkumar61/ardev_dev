@@ -42,7 +42,7 @@ class EmployeeView(generics.ListCreateAPIView):
         return Response({"error": serializer.error}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EmployeeDetailsView(generics.RetrieveUpdateAPIView):
+class EmployeeDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
