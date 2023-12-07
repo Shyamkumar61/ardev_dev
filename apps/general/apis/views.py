@@ -3,7 +3,7 @@ from rest_framework.views import  APIView
 from rest_framework import generics
 from rest_framework import status
 from .serializers import ServiceSerializer, DesignationSerializer, ServiceOptionSerializer, BankSerializer, \
-    BankOptionSerializer
+    BankOptionSerializer, DesignationOptionSerializer
 from apps.general.models import Services, Designation, Banks
 from apps.clients.apis.views import CustomPagination
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -41,6 +41,16 @@ class DesignationDetailView(generics.RetrieveUpdateAPIView):
     queryset = Designation.objects.all()
     serializer_class = DesignationSerializer
     lookup_field = 'id'
+
+
+class DesignationOptionView(generics.GenericAPIView):
+
+    queryset = Designation.objects.all()
+    serializer_class = DesignationOptionSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.serializer_class(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class BankOptionView(generics.GenericAPIView):

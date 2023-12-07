@@ -92,6 +92,16 @@ class BankOptionSerializer(serializers.ModelSerializer):
         fields = ('value', 'label')
 
 
+class DesignationOptionSerializer(serializers.ModelSerializer):
+
+    value = serializers.IntegerField(source='id')
+    label = serializers.CharField(source='name')
+
+    class Meta:
+        model = Banks
+        fields = ('value', 'label')
+
+
 class BankSerializer(serializers.Serializer):
 
     bank_name = serializers.CharField(required=True)
