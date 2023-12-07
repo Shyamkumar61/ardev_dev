@@ -61,12 +61,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         emp_id = attrs.get('emp_id')
-        if Employee.objects.filter(emp_id=emp_id).exists():
+        instance = self.instance
+        if Employee.objects.exclude(pk=instance.pk).filter(emp_id=emp_id).exists():
             raise ValidationError({'error': "employee Id already Exixts"})
         return attrs
             
     def create(self, validated_data):
-        print(validated_data)
         bank_details = validated_data.pop('emp_bank', [])
         employee = Employee.objects.create(**validated_data)
         for bank_detail in bank_details:

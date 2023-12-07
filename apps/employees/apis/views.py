@@ -55,12 +55,15 @@ class EmployeeDetailsView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(queryset)
         return Response({'success': True, 'data': serializer.data}, status=status.HTTP_200_OK)
     
+    # def put(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.update(serializer, serializer.validated_data)
+    #     return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+
     def put(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.update(serializer, serializer.validated_data)
-        return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+        return super().put(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
