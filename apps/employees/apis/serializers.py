@@ -30,12 +30,20 @@ class EmployeeBankSerializer(serializers.ModelSerializer):
         return response
 
 
+class EmployeeBankIdSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmployeeBank
+        fields = ('bank', 'accountNumber', 'ifscCode')
+
+
 class EmployeeSerializer(serializers.ModelSerializer):
 
-    emp_bank = EmployeeBankSerializer(required=False, many=True)
+    emp_bank = EmployeeBankIdSerializer(required=False, many=True)
     profile_img = serializers.ImageField(required=False, validators=[_image_format_validation])
     pcc_image = serializers.ImageField(required=False, validators=[_image_format_validation])
     aadhar_image = serializers.ImageField(required=False, validators=[_image_format_validation])
+    bank_id = serializers.IntegerField()
 
     def __init__(self, *args, **kwargs):
         request = kwargs['context']['request'] if 'context' in kwargs and 'request' in kwargs['context'] else None
