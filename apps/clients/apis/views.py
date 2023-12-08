@@ -125,7 +125,7 @@ class ShiftEmployeeList(generics.ListAPIView):
 class ShiftEmployeeDetails(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
-        queryset = get_object_or_404(ShiftEmployee, id=60)
+        queryset = get_object_or_404(ShiftEmployee, id=kwargs.get('pk'))
         emp_instance = queryset.emp_id
         emp_instance.current_company = queryset.prev_company
         queryset.is_active = False

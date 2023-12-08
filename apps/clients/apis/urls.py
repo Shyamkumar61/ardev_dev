@@ -9,6 +9,6 @@ urlpatterns = [
     path('create-client/', views.ClientCreateView.as_view()),
     path('emp-shift/', views.EmployeeShiftView.as_view()),
     path('emp-shift-list/', views.ShiftEmployeeList.as_view()),
-    path('emp_reassing/', views.ShiftEmployeeDetails.as_view()),
+    path('emp_reassing/<int:pk>/', views.ShiftEmployeeDetails.as_view()),
     path('client-option-list/', views.ClientOptionView.as_view())
 ]
