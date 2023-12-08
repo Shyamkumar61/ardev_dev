@@ -43,7 +43,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
     profile_img = serializers.ImageField(required=False, validators=[_image_format_validation])
     pcc_image = serializers.ImageField(required=False, validators=[_image_format_validation])
     aadhar_image = serializers.ImageField(required=False, validators=[_image_format_validation])
-    bank_id = serializers.IntegerField()
 
     def __init__(self, *args, **kwargs):
         request = kwargs['context']['request'] if 'context' in kwargs and 'request' in kwargs['context'] else None
