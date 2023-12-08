@@ -182,6 +182,5 @@ class ShiftEmployee(TimeStampedModel):
 
     def save(self, **kwargs):
         self.prev_company = self.emp_id.current_company
-        self.is_active = True
         return super().save(**kwargs)
     
