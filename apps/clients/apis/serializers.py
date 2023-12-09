@@ -8,6 +8,7 @@ from apps.employees.models import ShiftEmployee, EmployeeHistory
 from django.db import transaction
 from datetime import datetime, timedelta
 from rest_framework.exceptions import ValidationError
+import re
 
 
 class ClientEmployeeList(serializers.ModelSerializer):
@@ -31,6 +32,24 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         exclude = ('created', 'modified')
+
+    def validate_client_name(self, value):
+        if not value:
+            raise serializers.ValidationError("Client Name Field Cannot Be Empty")
+        elif value and not value.isalpha():
+            raise serializers.ValidationError({"success": False, "error": "No Numbers are allowed in Name Field"})
+        return value
+
+    def validate_client_phone(self, value):
+        phone_number_pattern = re.compile(r'^\d{10}$')
+        if not value:
+            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+        elif len(value) < 10 or len(value) > 10:
+            raise serializers.ValidationError({"success": False, "error": "Invalid phone number format. Please enter a 10-digit number."})
+        elif not phone_number_pattern.match(value):
+            raise serializers.ValidationError(
+                {"success": False, "error": "Phone Number cannot contain Alphabets or Special Charaters"})
+        return value
 
     def to_representation(self, instance):
         hide_relationship = self.context.get('hide_relationship', True)
