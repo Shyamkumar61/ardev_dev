@@ -120,7 +120,7 @@ class EmployeeCompanyEdit(serializers.Serializer):
     shifted_company = serializers.IntegerField(write_only=True, required=True)
 
     def save(self, **kwargs):
-        shift_type = self.validated_data.pop('shift_type')
+        # shift_type = self.validated_data.pop('shift_type')
         emp_id = self.validated_data.get('emp_id')
         company_id = self.validated_data.get('shifted_company')
         try:
