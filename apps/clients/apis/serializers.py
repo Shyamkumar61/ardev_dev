@@ -37,7 +37,7 @@ class ClientSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Client Name Field Cannot Be Empty")
         elif value and not value.isalpha():
-            raise serializers.ValidationError({"success": False, "error": "No Numbers are allowed in Name Field"})
+            raise serializers.ValidationError("Client Name Cannot Consist of Number and Special Char")
         return value
 
     def validate_client_phone(self, value):
@@ -45,11 +45,59 @@ class ClientSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Client Phone Number Cannot be Empty")
         elif len(value) < 10 or len(value) > 10:
-            raise serializers.ValidationError({"success": False, "error": "Invalid phone number format. Please enter a 10-digit number."})
+            raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
         elif not phone_number_pattern.match(value):
             raise serializers.ValidationError(
-                {"success": False, "error": "Phone Number cannot contain Alphabets or Special Charaters"})
+                {"message": "Phone Number cannot contain Alphabets or Special Charaters"})
         return value
+
+    def validate_client_gst(self, value):
+        if value:
+            if len(value) != 15:
+                raise serializers.ValidationError("Gst Number Should have 15 Characters")
+            if not re.match(r'^[a-zA-Z0-9]*$', value):
+                raise serializers.ValidationError("Gst Number should contain only alphanumeric characters")
+            return value
+
+    def validate_lut_tenure(self, value):
+        if value:
+            if not re.match(r'^[a-zA-Z0-9\s]*$', value):
+                raise serializers.ValidationError("Lut Number should contain only alphanumeric characters")
+            return value
+
+    def validate_client_city(self, value):
+        if not value:
+            raise serializers.ValidationError("City Fields Cannot be Empty")
+        if not re.match(r'^[a-zA-Z\s]*$', value):
+            raise serializers.ValidationError("City name should contain only alphabets and spaces")
+        return value
+
+    def validate_client_pincode(self, attrs):
+        pincode_pattern = re.compile(r'^\d{6}$')
+        if not attrs:
+            raise serializers.ValidationError("Please Enter a Pincode")
+        if len(attrs) != 6:
+            raise serializers.ValidationError("Please Enter a valid Pincode")
+        if not pincode_pattern.match(attrs):
+            raise serializers.ValidationError("Pincode must be Numbers")
+
+    def validate_billing_type(self, value):
+        if not value:
+            raise serializers.ValidationError("Billing Type cannot be Empty")
+        return value
+
+    def validate_client_sector(self, value):
+        if not value:
+            raise serializers.ValidationError("Billing Type cannot be Empty")
+        return value
+
+    def validate_service(self, value):
+        if not value:
+            raise serializers.ValidationError("Service Field cannot be empty")
+
+    def validate_designation(self, value):
+        if not value:
+            raise serializers.ValidationError("Designation Field cannot be empty")
 
     def to_representation(self, instance):
         hide_relationship = self.context.get('hide_relationship', True)
@@ -59,14 +107,6 @@ class ClientSerializer(serializers.ModelSerializer):
         represent['service'] = [{'id': value.id, 'name': value.service_name} for value in instance.service.all()]
         represent['designation'] = [{'id': value.id, 'name': value.name} for value in instance.designation.all()]
         return represent
-
-    # def create(self, validated_data):
-    #     services = validated_data.pop('service')
-    #     designations = validated_data.pop('designation')
-    #     client = Client.objects.create(**validated_data)
-    #     client.service.set(*services)
-    #     client.service.set(*designations)
-    #     return client
 
 
 class ClientListSerializer(serializers.Serializer):

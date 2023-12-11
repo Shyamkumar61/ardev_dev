@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from ..models import Employee, EmployeeBank
 from PIL import Image as PILImage
+import re
 from apps.general.apis.serializers import ServiceSerializer, EmployeeDesignation, DesignationSerializer
 
 
@@ -54,9 +55,38 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         exclude = ('created', 'modified')
 
+    def validate_emp_id(self, value):
+        if not value:
+            raise serializers.ValidationError("Emp Id cannot be Empty")
+        elif not re.match(r'[0-9]*$', value):
+            raise serializers.ValidationError("Emp Id cannot be Character or Special Character")
+        return value
+
     def validate_name(self, value):
         if any(char.isdigit() for char in value):
             raise ValidationError("No Numbers Are Allowed")
+        return value
+
+    def validate_phone_no(self, value):
+        phone_number_pattern = re.compile(r'^\d{10}$')
+        if not value:
+            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+        elif len(value) < 10 or len(value) > 10:
+            raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
+        elif not phone_number_pattern.match(value):
+            raise serializers.ValidationError(
+                {"message": "Phone Number cannot contain Alphabets or Special Charaters"})
+        return value
+
+    def validate_whatsappNum(self, value):
+        phone_number_pattern = re.compile(r'^\d{10}$')
+        if not value:
+            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+        elif len(value) < 10 or len(value) > 10:
+            raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
+        elif not phone_number_pattern.match(value):
+            raise serializers.ValidationError(
+                {"message": "Phone Number cannot contain Alphabets or Special Charaters"})
         return value
 
     def validate_aadhar(self, value):
@@ -65,7 +95,20 @@ class EmployeeSerializer(serializers.ModelSerializer):
         elif value.isalpha():
             raise ValidationError("No Characters are Allowed")
         return value
-    
+
+    def validate_address(self, value):
+        if not value:
+            raise serializers.ValidationError("Address Field cannot be Empty")
+
+    def validate_uanNumber(self, value):
+        if not value:
+            raise serializers.ValidationError("uanNumber Cannot be Empty")
+        elif len(value) != 12:
+            raise serializers.ValidationError("uanNumber Only Contains 12 Numbers")
+        elif not re.match(r'[0-9]*$', value):
+            raise serializers.ValidationError("UanNumber Cannot Contain Character or Special Charater")
+        return value
+
     def validate(self, attrs):
         emp_id = attrs.get('emp_id')
         instance = self.instance
