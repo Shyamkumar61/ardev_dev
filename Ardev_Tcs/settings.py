@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'apps.account',
     'apps.employees',
     'apps.general',
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'Ardev_Tcs.middleware.LogRequestsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -73,7 +75,7 @@ MIDDLEWARE = [
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'frontend/dist/static'),
-    os.path.join(BASE_DIR, 'static/') # Path to the Vite build output directory
+    os.path.join(BASE_DIR, 'static/')
 ]
 
 ROOT_URLCONF = 'Ardev_Tcs.urls'
@@ -112,6 +114,7 @@ DATABASES = {
     }
 }
 
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -119,7 +122,7 @@ DATABASES = {
 #         'USER': 'postgres',
 #         'PASSWORD': 'shyam6132',
 #         'HOST': 'localhost',
-#         'PORT': '5432'
+#         'PORT': 5432
 #     }
 # }
 
@@ -145,12 +148,9 @@ AUTH_USER_MODEL = 'account.Account'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication"
     ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     "rest_framework.permissions.IsAuthenticated"
-    # ]
+    
 }
 
 CSRF_COOKIE_NAME = 'csrftoken'
@@ -186,6 +186,25 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': r'C:\Users\Shyam\Desktop\workingFolder\ardev_dev\warning.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'WARNING',
+#             'propagate': True,
+#         },
+#     },
+# }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

@@ -1,10 +1,13 @@
-from rest_framework.views import Response
+from rest_framework.views import Response, APIView
 from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, GenericAPIView
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import RegisterUserSerializer, LoginSerializer
-from apps.account.models import Account
+from apps.account.models import Account, LoginHistory
 from django.contrib.auth import authenticate
-from apps.account.mixins import LoginMixin
+from apps.account.mixins import LoginMixin, get_client_ip
+from apps.account.signals import user_token_logout
 
 
 class LoginAPIView(LoginMixin,
@@ -36,10 +39,20 @@ class LoginView(LoginAPIView):
         return super().login(request, *args, **kwargs)
 
 
-# class SendPasswordResetEmailView(APIView):
-#
-#     def post(self, request):
-#         email = request.data['email']
-#         if email is not None:
-#             serializer = ""
+class LogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            # if request.user.is_authenticated and isinstance(request.user, Account):
+            # user_token_logout.send(sender=request.user.__class__, user=request.user, request=request)
+            response = Response({"success": True, "data": "User Logout Successfull"}, status.HTTP_200_OK)
+            response.delete_cookie('auth_token')
+            return response
+            # else:
+            #     return Response({"success": False, "error": "User is not authenticated"},
+            #                     status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
