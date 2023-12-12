@@ -17,7 +17,7 @@ from apps.clients.mixins import OptionMixin
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
-    page_query_param = 'page_size'
+    page_query_param = 'page'
 
     def get_paginated_response(self, data):
         response = super().get_paginated_response(data)
