@@ -36,7 +36,7 @@ class ClientSerializer(serializers.ModelSerializer):
     def validate_client_name(self, value):
         if not value:
             raise serializers.ValidationError("Client Name Field Cannot Be Empty")
-        elif value and not value.isalpha():
+        elif value and not re.match(r'^[a-zA-Z\s]*$', value):
             raise serializers.ValidationError("Client Name Cannot Consist of Number and Special Char")
         return value
 
