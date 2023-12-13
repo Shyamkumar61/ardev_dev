@@ -12,8 +12,8 @@ def validate_name(value):
 
 class ServiceOptionSerializer(serializers.Serializer):
 
-    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
-    value = serializers.CharField(source='service_name', read_only=True)
+    value = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    label = serializers.CharField(source='service_name', read_only=True)
 
 
 class ServiceSerializer(serializers.Serializer):
