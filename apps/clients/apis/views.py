@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import get_object_or_404
 from rest_framework.views import Response
 from rest_framework.views import APIView
@@ -13,6 +14,9 @@ from apps.clients.filters import ClientFilter
 from apps.clients.apis.serializers import ShiftEmpSerializer, EmployeeCompanyEdit, clientOptionSerializer, \
                         ClientSerializer, ClientListSerializer, ShiftEmployee, ShiftEmpListSerializer
 from apps.clients.mixins import OptionMixin
+from rest_framework import status
+from apps.general.models import Services, Designation
+from rest_framework.parsers import MultiPartParser
 
 
 class CustomPagination(PageNumberPagination):
@@ -57,9 +61,34 @@ class ClientListView(generics.ListAPIView):
 class ClientCreateView(generics.ListCreateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+    parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        print(request.data)
+        # data = {
+        #     "client_name": request.data.get('client_name'),
+        #     "sector": request.data.get('sector'),
+        #     "client_gst": request.data.get('client_gst'),
+        #     "contract_singed": request.data.get('contract_singed'),
+        #     "contract_period": request.data.get('contract_period'),
+        #     "client_email": request.data.get('client_email'),
+        #     "client_phone": request.data.get('client_phone'),
+        #     "client_address": request.data.get('client_address'),
+        #     "client_city": request.data.get('client_city'),
+        #     "client_pincode": "123456",
+        #     "service": json.loads(request.data.get('service')),
+        #     "designation": json.loads(request.data.get('designation')),
+        #     "lut_tenure": request.data.get('lut_tenure'),
+        #     "billing_type": request.data.get('billing_type'),
+        #     "client_logo": request.data.get('client_logo')
+        # }
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response({"success": "New Employee Added"}, status=status.HTTP_201_CREATED)
+        return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
