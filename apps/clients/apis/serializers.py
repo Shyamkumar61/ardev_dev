@@ -28,8 +28,8 @@ class ClientEmployeeList(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
 
     employee_company = ClientEmployeeList(many=True, read_only=True, required=False)
-    service = ServiceOptionSerializer(many=True, read_only=True)
-    designation = DesignationOptionSerializer(many=True, read_only=True)
+    service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.all(), many=True)
+    designation = serializers.PrimaryKeyRelatedField(queryset=Designation.objects.all(), many=True)
 
     class Meta:
         model = Client
@@ -40,7 +40,6 @@ class ClientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Client Name Field Cannot Be Empty")
         elif value and not re.match(r'^[a-zA-Z\s]*$', value):
             raise serializers.ValidationError("Client Name Cannot Consist of Number and Special Char")
-        print(value)
         return value
 
     def validate_client_phone(self, value):
@@ -52,7 +51,6 @@ class ClientSerializer(serializers.ModelSerializer):
         elif not phone_number_pattern.match(value):
             raise serializers.ValidationError(
                 {"message": "Phone Number cannot contain Alphabets or Special Charaters"})
-        print(value)
         return value
 
     def validate_client_gst(self, value):
@@ -61,7 +59,6 @@ class ClientSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Gst Number Should have 15 Characters")
             if not re.match(r'^[a-zA-Z0-9]*$', value):
                 raise serializers.ValidationError("Gst Number should contain only alphanumeric characters")
-            print(value)
             return value
 
     def validate_lut_tenure(self, value):
@@ -96,37 +93,23 @@ class ClientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Billing Type cannot be Empty")
         return value
 
-    # def validate_service(self, value):
-    #     if not value:
-    #         raise serializers.ValidationError("Service Field cannot be empty")
-    #     try:
-    #         pk_list = [int(pk) for pk in json.loads(value)]
-    #         return pk_list
-    #     except (json.JSONDecodeError, ValueError):
-    #         raise serializers.ValidationError("Invalid format for Service. Provide a list of integers.")
+    def validate_service(self, value):
+        if not value:
+            raise serializers.ValidationError("Service Field cannot be empty")
+        return value
 
     def validate_designation(self, value):
-        print(value)
         if not value:
             raise serializers.ValidationError("Designation Field cannot be empty")
-        if value:
-
-            try:
-                value = json.loads(value)
-                if not isinstance(value, list):
-                    raise serializers.ValidationError("Designation should be a list")
-                print(value)
-                return value
-            except json.JSONDecodeError as e:
-                raise serializers.ValidationError("Invalid JSON format for Designation")
+        return value
 
     def to_representation(self, instance):
         hide_relationship = self.context.get('hide_relationship', True)
         if hide_relationship and 'employee_company' in self.fields:
             del self.fields['employee_company']
         represent = super().to_representation(instance)
-        # represent['service'] = [{'id': value.id, 'name': value.service_name} for value in instance.service.all()]
-        # represent['designation'] = [{'id': value.id, 'name': value.name} for value in instance.designation.all()]
+        represent['service'] = [{'value': value.id, 'label': value.service_name} for value in instance.service.all()]
+        represent['designation'] = [{'value': value.id, 'label': value.name} for value in instance.designation.all()]
         return represent
 
 

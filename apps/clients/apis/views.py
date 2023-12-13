@@ -64,30 +64,29 @@ class ClientCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
-        # data = {
-        #     "client_name": request.data.get('client_name'),
-        #     "sector": request.data.get('sector'),
-        #     "client_gst": request.data.get('client_gst'),
-        #     "contract_singed": request.data.get('contract_singed'),
-        #     "contract_period": request.data.get('contract_period'),
-        #     "client_email": request.data.get('client_email'),
-        #     "client_phone": request.data.get('client_phone'),
-        #     "client_address": request.data.get('client_address'),
-        #     "client_city": request.data.get('client_city'),
-        #     "client_pincode": "123456",
-        #     "service": json.loads(request.data.get('service')),
-        #     "designation": json.loads(request.data.get('designation')),
-        #     "lut_tenure": request.data.get('lut_tenure'),
-        #     "billing_type": request.data.get('billing_type'),
-        #     "client_logo": request.data.get('client_logo')
-        # }
-        serializer = self.get_serializer(data=request.data)
+        data = {
+            "client_name": request.data.get('client_name'),
+            "sector": request.data.get('sector'),
+            "client_gst": request.data.get('client_gst'),
+            "contract_singed": request.data.get('contract_singed'),
+            "contract_period": request.data.get('contract_period'),
+            "client_email": request.data.get('client_email'),
+            "client_phone": request.data.get('client_phone'),
+            "client_address": request.data.get('client_address'),
+            "client_city": request.data.get('client_city'),
+            "client_pincode": "123456",
+            "service": json.loads(request.data.get('service')),
+            "designation": json.loads(request.data.get('designation')),
+            "lut_tenure": request.data.get('lut_tenure'),
+            "billing_type": request.data.get('billing_type'),
+            "client_logo": request.data.get('client_logo')
+        }
+        serializer = self.get_serializer(data=data)
 
         if serializer.is_valid():
-            print(serializer.validated_data)
+            print("Test Data", serializer.validated_data)
             serializer.save()
-            return Response({"success": "New Employee Added"}, status=status.HTTP_201_CREATED)
+            return Response({"success": "New Client Added"}, status=status.HTTP_201_CREATED)
         return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -112,7 +111,30 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"success": False, "data": str(e)})
 
     def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
+
+        data = {
+            "client_name": request.data.get('client_name'),
+            "sector": request.data.get('sector'),
+            "client_gst": request.data.get('client_gst'),
+            "contract_singed": request.data.get('contract_singed'),
+            "contract_period": request.data.get('contract_period'),
+            "client_email": request.data.get('client_email'),
+            "client_phone": request.data.get('client_phone'),
+            "client_address": request.data.get('client_address'),
+            "client_city": request.data.get('client_city'),
+            "client_pincode": "123456",
+            "service": json.loads(request.data.get('service')),
+            "designation": json.loads(request.data.get('designation')),
+            "lut_tenure": request.data.get('lut_tenure'),
+            "billing_type": request.data.get('billing_type'),
+            "client_logo": request.data.get('client_logo')
+        }
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': True, "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         try:
