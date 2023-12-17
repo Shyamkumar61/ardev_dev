@@ -161,6 +161,19 @@ class EmployeeListSerializer(serializers.Serializer):
     current_company = serializers.SlugRelatedField(read_only=True, slug_field='client_name')
 
 
+class EmployeeCompanyListSerializer(serializers.ModelSerializer):
+
+
+
+    class Meta:
+        model = Employee
+        fields = ('emp_id', 'name', 'phone_no', 'bloodGroup', 'joining_date', 'profile_img', 'designation')
+
+    def to_representation(self, instance):
+        represent = super().to_representation(instance)
+        represent['designation'] = instance.designation.name
+        return represent
+
 
 
 

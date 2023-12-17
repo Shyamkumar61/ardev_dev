@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from apps.clients.models import Client
 from apps.employees.models import Employee
-from apps.employees.apis.serializers import EmployeeSerializer
+from apps.employees.apis.serializers import EmployeeSerializer, EmployeeCompanyListSerializer
 from rest_framework import generics
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
@@ -64,6 +64,7 @@ class ClientCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -105,13 +106,13 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
+            print(instance)
             serializer = self.get_serializer(instance)
             return Response({"success": True, "data": serializer.data})
         except Exception as e:
             return Response({"success": False, "data": str(e)})
 
     def put(self, request, *args, **kwargs):
-
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -191,3 +192,13 @@ class ClientOptionView(OptionMixin, generics.GenericAPIView):
     queryset = Client.objects.all()
     serializer_class = clientOptionSerializer
 
+
+class ClientEmpListView(generics.ListAPIView):
+
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeCompanyListSerializer
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        queryset = Employee.objects.filter(current_company=self.kwargs.get('pk'))
+        return queryset

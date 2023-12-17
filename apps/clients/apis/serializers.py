@@ -11,6 +11,8 @@ from django.db import transaction
 from datetime import datetime, timedelta
 from rest_framework.exceptions import ValidationError
 from apps.general.apis.serializers import ServiceOptionSerializer, DesignationOptionSerializer
+from django.conf import settings
+from django.templatetags.static import static
 
 
 class ClientEmployeeList(serializers.ModelSerializer):
@@ -103,6 +105,12 @@ class ClientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Designation Field cannot be empty")
         return value
 
+    def validate(self, attrs):
+        client_phone = attrs.get('client_phone')
+        if Client.objects.filter(client_phone=client_phone,).exists():
+            raise ValidationError("Phone Number is Already Present")
+        return attrs
+
     def to_representation(self, instance):
         hide_relationship = self.context.get('hide_relationship', True)
         if hide_relationship and 'employee_company' in self.fields:
@@ -120,8 +128,15 @@ class ClientListSerializer(serializers.Serializer):
     sector = serializers.CharField(read_only=True)
     client_phone = serializers.CharField(read_only=True)
     client_email = serializers.EmailField(read_only=True)
-    client_logo = serializers.ImageField()
+    client_logo = serializers.SerializerMethodField()
     client_employee = serializers.SerializerMethodField()
+
+    def get_client_logo(self, obj):
+        if obj.client_logo:
+            # Assuming 'images' is the media URL pattern defined in your Django project
+            media_url = self.context['request'].build_absolute_uri(static('images/'))
+            return f"{media_url}{obj.client_logo.name}"
+        return None
 
     def get_client_employee(self, instance):
         emp_count = Employee.objects.filter(current_company=instance.id).count()

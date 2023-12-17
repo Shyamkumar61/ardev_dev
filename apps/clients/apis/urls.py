@@ -11,4 +11,5 @@ urlpatterns = [
     path('emp-shift-list/', views.ShiftEmployeeList.as_view()),
     path('emp_reassing/<int:pk>/', views.ShiftEmployeeDetails.as_view()),
     path('client-option-list/', views.ClientOptionView.as_view()),
+    path('client-emp-list/<int:pk>/', views.ClientEmpListView.as_view())
 ]

@@ -1,3 +1,4 @@
+import re
 from rest_framework import serializers
 from apps.general.models import Services, Designation, Banks
 from rest_framework.exceptions import ValidationError
@@ -22,6 +23,13 @@ class ServiceSerializer(serializers.Serializer):
     service_name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
     is_active = serializers.BooleanField(default=True)
 
+    def validate_service_name(self, value):
+        if not value:
+            raise ValidationError("Service Name cannot be Empty")
+        elif value and not re.match(r'^[a-zA-Z\s]*$', value):
+            raise serializers.ValidationError("Service Name Cannot Consist of Number and Special Char")
+        return value
+
     def validate(self, data):
         service_name = data.get('service_name')
         if Services.objects.filter(service_name=service_name).exists():
@@ -44,6 +52,17 @@ class DesignationSerializer(serializers.Serializer):
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.only('id'))
     name = serializers.CharField(max_length=20, required=True, validators=[validate_name])
     is_active = serializers.BooleanField(default=True)
+
+    def validate_service(self, value):
+        if not value:
+            raise ValidationError("Service Field cannot be Empty")
+
+    def validate_name(self, value):
+        if not value:
+            raise ValidationError("Designation Name cannot be Empty")
+        elif value and not re.match(r'^[a-zA-Z\s]*$', value):
+            raise serializers.ValidationError("Designation Name Cannot Consist of Number and Special Char")
+        return value
 
     def validate(self, attrs):
         name = attrs.get('name')
@@ -105,7 +124,7 @@ class DesignationOptionSerializer(serializers.ModelSerializer):
 class BankSerializer(serializers.Serializer):
 
     bank_name = serializers.CharField(required=True)
-
+    
     def create(self, validated_data):
         bank_name = validated_data.get('bank_name')
         try:
