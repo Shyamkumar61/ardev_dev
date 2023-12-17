@@ -197,6 +197,7 @@ class ClientEmpListView(generics.ListAPIView):
 
     queryset = Employee.objects.all()
     serializer_class = EmployeeCompanyListSerializer
+    pagination_class = CustomPagination
     lookup_field = 'pk'
 
     def get_queryset(self):
