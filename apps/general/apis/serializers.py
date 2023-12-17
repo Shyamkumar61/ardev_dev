@@ -56,6 +56,7 @@ class DesignationSerializer(serializers.Serializer):
     def validate_service(self, value):
         if not value:
             raise ValidationError("Service Field cannot be Empty")
+        return value
 
     def validate_name(self, value):
         if not value:
@@ -72,8 +73,7 @@ class DesignationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         try:
-            service = Services.objects.get(id=validated_data['service'].id)
-            designation = Designation.objects.create(service=service, name=validated_data['name'])
+            designation = Designation.objects.create(service=validated_data['service'], name=validated_data['name'])
             return designation
         except Exception as e:
             raise ValidationError({"success": False, "data": str(e)})

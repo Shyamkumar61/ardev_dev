@@ -40,7 +40,7 @@ class EmployeeBankIdSerializer(serializers.ModelSerializer):
 
 class EmployeeSerializer(serializers.ModelSerializer):
 
-    emp_bank = EmployeeBankIdSerializer(required=False, many=True)
+    emp_bank = EmployeeBankIdSerializer(required=False, many=True, read_only=True)
     profile_img = serializers.ImageField(required=False, validators=[_image_format_validation])
     pcc_image = serializers.ImageField(required=False, validators=[_image_format_validation])
     aadhar_image = serializers.ImageField(required=False, validators=[_image_format_validation])
@@ -99,6 +99,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def validate_address(self, value):
         if not value:
             raise serializers.ValidationError("Address Field cannot be Empty")
+        return value
 
     def validate_uanNumber(self, value):
         if not value:
@@ -112,32 +113,33 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         emp_id = attrs.get('emp_id')
         instance = self.instance
-        if Employee.objects.exclude(pk=instance.pk).filter(emp_id=emp_id).exists():
-            raise ValidationError({'error': "employee Id already Exixts"})
+        if not instance:
+            if Employee.objects.filter(emp_id=emp_id).exists():
+                raise ValidationError({'error': "employee Id already Exixts"})
         return attrs
             
-    def create(self, validated_data):
-        bank_details = validated_data.pop('emp_bank', [])
-        employee = Employee.objects.create(**validated_data)
-        for bank_detail in bank_details:
-            EmployeeBank.objects.create(employee=employee, **bank_detail)
-        return employee
+    # def create(self, validated_data):
+    #     bank_details = validated_data.pop('emp_bank', [])
+    #     employee = Employee.objects.create(**validated_data)
+    #     for bank_detail in bank_details:
+    #         EmployeeBank.objects.create(employee=employee, **bank_detail)
+    #     return employee
 
-    def update(self, instance, validated_data):
-        emp_bank_data = validated_data.pop('emp_bank', [])
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        for bank_data in emp_bank_data:
-            account_number = bank_data['accountNumber']
-            employee_bank, created = EmployeeBank.objects.get_or_create(employee=instance, bank=bank_data['bank'],
-                                                                        accountNumber=account_number,
-                                                                        ifscCode=bank_data['ifscCode'])
-            if not created:
-                for attr, value in bank_data.items():
-                    setattr(employee_bank, attr, value)
-            employee_bank.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     emp_bank_data = validated_data.pop('emp_bank', [])
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #     instance.save()
+    #     for bank_data in emp_bank_data:
+    #         account_number = bank_data['accountNumber']
+    #         employee_bank, created = EmployeeBank.objects.get_or_create(employee=instance, bank=bank_data['bank'],
+    #                                                                     accountNumber=account_number,
+    #                                                                     ifscCode=bank_data['ifscCode'])
+    #         if not created:
+    #             for attr, value in bank_data.items():
+    #                 setattr(employee_bank, attr, value)
+    #         employee_bank.save()
+    #     return instance
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -163,8 +165,6 @@ class EmployeeListSerializer(serializers.Serializer):
 
 class EmployeeCompanyListSerializer(serializers.ModelSerializer):
 
-
-
     class Meta:
         model = Employee
         fields = ('emp_id', 'name', 'phone_no', 'bloodGroup', 'joining_date', 'profile_img', 'designation')
@@ -175,6 +175,8 @@ class EmployeeCompanyListSerializer(serializers.ModelSerializer):
         return represent
 
 
+class EmployeeBankSerializer(serializers.ModelSerializer):
 
-
-
+    class Meta:
+        model = EmployeeBank
+        fields = ('bank', 'employee', 'account_number', 'ifscCode')
