@@ -112,12 +112,16 @@ class ClientSerializer(serializers.ModelSerializer):
         return attrs
 
     def to_representation(self, instance):
+        request = self.context.get('request', None)
         hide_relationship = self.context.get('hide_relationship', True)
         if hide_relationship and 'employee_company' in self.fields:
             del self.fields['employee_company']
         represent = super().to_representation(instance)
         represent['service'] = [{'value': value.id, 'label': value.service_name} for value in instance.service.all()]
         represent['designation'] = [{'value': value.id, 'label': value.name} for value in instance.designation.all()]
+        if instance.client_logo:
+            media_url = request.build_absolute_uri(static('images/'))
+            represent['client_logo'] = f"{media_url}{instance.client_logo.name}"
         return represent
 
 

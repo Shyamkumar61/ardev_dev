@@ -31,7 +31,7 @@ class EmployeeView(generics.ListCreateAPIView):
         if filter_set.is_valid():
             queryset = filter_set.qs
         page = self.paginate_queryset(queryset)
-        serializer = EmployeeListSerializer(page, many=True)
+        serializer = EmployeeListSerializer(page, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):

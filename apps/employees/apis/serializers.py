@@ -4,6 +4,7 @@ from ..models import Employee, EmployeeBank
 from PIL import Image as PILImage
 import re
 from apps.general.apis.serializers import ServiceSerializer, EmployeeDesignation, DesignationSerializer
+from django.templatetags.static import static
 
 
 def _image_format_validation(attrs):
@@ -142,6 +143,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     #     return instance
 
     def to_representation(self, instance):
+        request = self.context.get('request', None)
         response = super().to_representation(instance)
         response['designation'] = {
             "id": instance.designation.pk,
@@ -151,6 +153,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "id": instance.current_company.pk,
             "name": instance.current_company.client_name
         }
+        if instance.profile_img:
+            media_url = request.build_absolute_uri(static('images/'))
+            response['profile_img'] = f"{media_url}{instance.profile_img.name}"
         return response
 
 
@@ -161,6 +166,13 @@ class EmployeeListSerializer(serializers.Serializer):
     phone_no = serializers.CharField(read_only=True)
     designation = serializers.CharField(read_only=True)
     current_company = serializers.SlugRelatedField(read_only=True, slug_field='client_name')
+    profile_img = serializers.SerializerMethodField()
+
+    def get_profile_img(self, obj):
+        if obj.profile_img:
+            media_url = self.context['request'].build_absolute_uri(static('images/'))
+            return f"{media_url}{obj.profile_img.name}"
+        return None
 
 
 class EmployeeCompanyListSerializer(serializers.ModelSerializer):

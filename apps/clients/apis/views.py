@@ -50,7 +50,7 @@ class ClientListView(generics.ListAPIView):
         if filter_set.is_valid():
             data = filter_set.qs
         paginated_data = self.paginate_queryset(data)
-        serializer = self.get_serializer(paginated_data, many=True)                 #need to restructure
+        serializer = self.get_serializer(paginated_data, many=True)
         try:
             if serializer:
                 return self.get_paginated_response(serializer.data)
@@ -64,7 +64,6 @@ class ClientCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -99,7 +98,8 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_context(self):
         serializer_context = {
-            "hide_relationship": self.request.GET.get('hide_relationship', False)
+            "hide_relationship": self.request.GET.get('hide_relationship', False),
+            "request": self.request
         }
         return serializer_context
 
