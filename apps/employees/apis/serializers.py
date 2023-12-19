@@ -182,8 +182,12 @@ class EmployeeCompanyListSerializer(serializers.ModelSerializer):
         fields = ('emp_id', 'name', 'phone_no', 'bloodGroup', 'joining_date', 'profile_img', 'designation')
 
     def to_representation(self, instance):
+        request = self.context.get('request', None)
         represent = super().to_representation(instance)
         represent['designation'] = instance.designation.name
+        if instance.profile_img:
+            media_url = request.build_absolute_uri(static('images/'))
+            represent['profile_img'] = f"{media_url}{instance.profile_img.name}"
         return represent
 
 
