@@ -2,8 +2,8 @@ import PIL.Image
 from rest_framework.views import Response
 from rest_framework import generics
 from rest_framework.views import APIView
-from ..models import Employee
-from .serializers import EmployeeSerializer, EmployeeListSerializer
+from ..models import Employee, EmployeeBank
+from .serializers import EmployeeSerializer, EmployeeListSerializer, EmployeeBankSerializer
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from PIL import Image as PILImage
 from rest_framework import status
@@ -71,3 +71,21 @@ class EmployeeDetailsView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"success": True, "data": serializer.data}, status=status.HTTP_200_OK)
+
+
+class EmployeeBankCreateView(generics.CreateAPIView):
+
+    serializer_class = EmployeeBankSerializer
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        if response:
+            return Response({"success": True, "data": response.data})
+        return Response({"success": False, "error": "Invalid Data"})
+
+
+class EmployeeBankDetailView(generics.UpdateAPIView):
+
+    serializer_class = EmployeeSerializer
+    lookup_field = 'pk'
+

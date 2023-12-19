@@ -189,6 +189,39 @@ class EmployeeCompanyListSerializer(serializers.ModelSerializer):
 
 class EmployeeBankSerializer(serializers.ModelSerializer):
 
+    def validate_employee(self, value):
+        if not value:
+            raise serializers.ValidationError("Please Assing a Employee")
+        if value and EmployeeBank.objects.filter(employee=value).exists():
+            raise serializers.ValidationError("This Employee Already has Bank Assingned")
+        return value
+
+    def validate_accountNumber(self, value):
+        if not value:
+            raise serializers.ValidationError("Account Number Field Cannot be empty")
+        if value and not re.match(r'^[0-9]{11,16}$', value):
+            raise serializers.ValidationError("Account Number Cannot be String or Special Characters")
+        return value
+
+    def validate_ifscCode(self, value):
+        if not value:
+            raise serializers.ValidationError("Please Enter Bank Ifsc Code")
+        if value and not re.match(r'^[a-zA-Z0-9]*$', value):
+            raise serializers.ValidationError("Account Number Cannot be String or Special Characters")
+        return value
+
+    def validate(self, attrs):
+        acc_num = attrs.get('accountNumber')
+        if EmployeeBank.objects.filter(accountNumber=acc_num).exists():
+            raise serializers.ValidationError("Account Number Already Exists")
+        return attrs
+
     class Meta:
         model = EmployeeBank
-        fields = ('bank', 'employee', 'account_number', 'ifscCode')
+        fields = ('bank', 'employee', 'accountNumber', 'ifscCode')
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['bank'] = instance.bank.bank_name
+        response['employee'] = instance.employee.name
+        return response

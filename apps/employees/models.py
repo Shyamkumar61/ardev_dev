@@ -118,7 +118,7 @@ class Employee(TimeStampedModel):
 class EmployeeBank(TimeStampedModel):
     bank = models.ForeignKey(Banks, on_delete=models.CASCADE, related_name='employee_bank')
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='emp_bank')
-    accountNumber = models.CharField(max_length=20)
+    accountNumber = models.CharField(max_length=20, unique=True)
     ifscCode = models.CharField(max_length=20)
 
     objects = models.Manager()
