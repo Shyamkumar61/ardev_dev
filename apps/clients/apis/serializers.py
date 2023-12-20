@@ -106,8 +106,9 @@ class ClientSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        instance = self.instance
         client_phone = attrs.get('client_phone')
-        if Client.objects.filter(client_phone=client_phone,).exists():
+        if not self.instance and Client.objects.filter(client_phone=client_phone,).exists():
             raise ValidationError("Phone Number is Already Present")
         return attrs
 

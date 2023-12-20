@@ -84,8 +84,25 @@ class EmployeeBankCreateView(generics.CreateAPIView):
         return Response({"success": False, "error": "Invalid Data"})
 
 
-class EmployeeBankDetailView(generics.UpdateAPIView):
+class EmployeeBankDetailView(generics.GenericAPIView):
 
-    serializer_class = EmployeeSerializer
-    lookup_field = 'pk'
+    queryset = EmployeeBank.objects.all()
+    serializer_class = EmployeeBankSerializer
+
+    def get_queryset(self):
+        queryset = EmployeeBank.objects.filter(employee=self.kwargs.get('pk'))
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(data=queryset)
+        return Response({"success": True, "data": serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'success': True, "data": serializer.data})
+        return Response({'success': False, "error": "Invalid Data"})
 
