@@ -143,13 +143,13 @@ class ClientListSerializer(serializers.Serializer):
             return f"{media_url}{obj.client_logo.name}"
         return None
 
-    def get_client_employee(self, instance):
+    def get_client_employees(self, instance):
         emp_count = Employee.objects.filter(current_company=instance.id).count()
         return emp_count
 
     def to_representation(self, instance):
         represent = super().to_representation(instance)
-        represent['client_employee'] = self.get_client_employee(instance)
+        represent['client_employee'] = self.get_client_employees(instance)
         return represent
 
 
