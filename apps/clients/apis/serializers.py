@@ -134,7 +134,7 @@ class ClientListSerializer(serializers.Serializer):
     client_phone = serializers.CharField(read_only=True)
     client_email = serializers.EmailField(read_only=True)
     client_logo = serializers.SerializerMethodField()
-    client_employee = serializers.SerializerMethodField()
+    client_employees = serializers.SerializerMethodField()
 
     def get_client_logo(self, obj):
         if obj.client_logo:

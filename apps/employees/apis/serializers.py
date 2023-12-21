@@ -145,6 +145,14 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         request = self.context.get('request', None)
         response = super().to_representation(instance)
+        response['designation'] = {
+            "id": instance.designation.pk,
+            "name": instance.designation.name
+        }
+        response['current_company'] = {
+            "id": instance.current_company.pk,
+            "name": instance.current_company.client_name
+        }
         media_url = request.build_absolute_uri(static('images/'))
         if instance.profile_img:
             response['profile_img'] = f"{media_url}{instance.profile_img.name}"
