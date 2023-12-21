@@ -149,7 +149,7 @@ class ClientListSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         represent = super().to_representation(instance)
-        represent['client_employee'] = self.get_client_employees(instance)
+        represent['client_employees'] = self.get_client_employees(instance)
         return represent
 
 
