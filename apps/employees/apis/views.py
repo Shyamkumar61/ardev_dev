@@ -89,17 +89,17 @@ class EmployeeBankDetailView(generics.GenericAPIView):
     queryset = EmployeeBank.objects.all()
     serializer_class = EmployeeBankSerializer
 
-    def get_queryset(self):
-        queryset = EmployeeBank.objects.filter(employee=self.kwargs.get('pk'))
+    def get_object(self):
+        queryset = EmployeeBank.objects.filter(employee__emp_id=self.kwargs.get('pk'))
         return queryset
 
     def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(data=queryset)
+        queryset = self.get_object()
+        serializer = self.get_serializer(queryset, many=True)
         return Response({"success": True, "data": serializer.data})
 
     def put(self, request, *args, **kwargs):
-        instance = self.get_queryset()
+        instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
