@@ -184,3 +184,5 @@ class ShiftEmployee(TimeStampedModel):
         self.prev_company = self.emp_id.current_company
         return super().save(**kwargs)
     
+    def save_temporary(self, **kwargs):
+        return super().save(**kwargs)

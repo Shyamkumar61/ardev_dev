@@ -17,6 +17,8 @@ from apps.clients.mixins import OptionMixin
 from rest_framework import status
 from apps.general.models import Services, Designation
 from rest_framework.parsers import MultiPartParser
+from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 class CustomPagination(PageNumberPagination):
@@ -74,12 +76,12 @@ class ClientCreateView(generics.ListCreateAPIView):
             "client_phone": request.data.get('client_phone'),
             "client_address": request.data.get('client_address'),
             "client_city": request.data.get('client_city'),
-            "client_pincode": "123456",
+            "client_pincode": request.data.get('pincode'),
             "service": json.loads(request.data.get('service')),
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
             "billing_type": request.data.get('billing_type'),
-            "client_logo": request.data.get('client_logo')
+            "client_logo": request.data.get('client_logo', None)
         }
         serializer = self.get_serializer(data=data)
 
@@ -123,7 +125,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             "client_phone": request.data.get('client_phone'),
             "client_address": request.data.get('client_address'),
             "client_city": request.data.get('client_city'),
-            "client_pincode": "123456",
+            "client_pincode": request.data.get('pincode'),
             "service": json.loads(request.data.get('service')),
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
@@ -178,12 +180,14 @@ class ShiftEmployeeDetails(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         queryset = get_object_or_404(ShiftEmployee, id=kwargs.get('pk'))
-        queryset.is_active = False
-        queryset.save()
-
-        emp_instance = queryset.emp_id
+        emp_instance = get_object_or_404(Employee, emp_id=queryset.emp_id.emp_id)
+        
         emp_instance.current_company = queryset.prev_company
         emp_instance.save()
+
+        queryset.is_active = False
+        queryset.save_temporary()
+
         return Response({"success": True, "data": "Employee Shift Status Disabled"})
 
 
