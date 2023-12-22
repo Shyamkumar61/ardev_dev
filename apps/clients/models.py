@@ -49,7 +49,7 @@ class Client(TimeStampedModel):
     designation = models.ManyToManyField(Designation, blank=True, related_name='client_designations')
     lut_tenure = models.CharField(max_length=50)
     billing_type = models.CharField(choices=BILLING_CHOICES, max_length=20)
-    client_logo = models.ImageField(upload_to='client_logos', default='default_logo.jpg')
+    client_logo = models.ImageField(upload_to='client_logos', default='default_logo.jpg', blank=True, null=True)
     active_status = models.BooleanField(default=True)
 
     objects = models.Manager()
