@@ -38,6 +38,11 @@ class EmployeeBankIdSerializer(serializers.ModelSerializer):
         model = EmployeeBank
         fields = ('bank', 'accountNumber', 'ifscCode')
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['bank'] = {'value': instance.bank.id, 'label': instance.bank.bank_name}
+        return response
+
 
 class EmployeeSerializer(serializers.ModelSerializer):
 
