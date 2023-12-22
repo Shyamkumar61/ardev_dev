@@ -108,9 +108,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return value
 
     def validate_uanNumber(self, value):
-        if not value:
-            raise serializers.ValidationError("uanNumber Cannot be Empty")
-        elif len(value) != 12:
+        instance = self.instance
+        if not instance and Employee.objects.filter(uanNumber=value).exists():
+            raise serializers.ValidationError("uanNumber already Exists")
+        elif value and len(value) != 12:
             raise serializers.ValidationError("uanNumber Only Contains 12 Numbers")
         elif not re.match(r'[0-9]*$', value):
             raise serializers.ValidationError("UanNumber Cannot Contain Character or Special Charater")

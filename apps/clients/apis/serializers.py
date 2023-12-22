@@ -57,7 +57,8 @@ class ClientSerializer(serializers.ModelSerializer):
         return value
 
     def validate_client_gst(self, value):
-        if value:
+        instance = self.instance
+        if value != 'null':
             if len(value) != 15:
                 raise serializers.ValidationError("Gst Number Should have 15 Characters")
             if not re.match(r'^[a-zA-Z0-9]*$', value):
@@ -79,9 +80,7 @@ class ClientSerializer(serializers.ModelSerializer):
 
     def validate_client_pincode(self, attrs):
         pincode_pattern = re.compile(r'^\d{6}$')
-        if not attrs:
-            raise serializers.ValidationError("Please Enter a Pincode")
-        if len(attrs) != 6:
+        if attrs and len(attrs) != 6:
             raise serializers.ValidationError("Please Enter a valid Pincode")
         if attrs and not pincode_pattern.match(attrs):
             raise serializers.ValidationError("Pincode must be Numbers")

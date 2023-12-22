@@ -55,7 +55,7 @@ class Employee(TimeStampedModel):
     address = models.TextField()
     gender = models.CharField(choices=GENDER_CHOICE, max_length=10)
     bloodGroup = models.CharField(choices=BloodGroupChoice, max_length=5)
-    uanNumber = models.CharField(max_length=20, unique=True)
+    uanNumber = models.CharField(max_length=20, null=True, blank=True, db_index=True)
     aadhar = models.CharField(max_length=20, unique=True)
     pan_card = models.CharField(max_length=30, blank=True, null=True)
     esiNumber = models.CharField(max_length=30, blank=True, null=True)
@@ -89,9 +89,6 @@ class Employee(TimeStampedModel):
             image = PILImage.open(attrs)
             image_fmt = image.format.lower()
             return image_fmt
-
-    def get_employee_age(self):
-        pass
 
     @property
     def get_pcc_image(self):
