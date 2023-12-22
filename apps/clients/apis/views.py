@@ -18,7 +18,7 @@ from rest_framework import status
 from apps.general.models import Services, Designation
 from rest_framework.parsers import MultiPartParser
 from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 class CustomPagination(PageNumberPagination):
@@ -41,6 +41,7 @@ class CustomPagination(PageNumberPagination):
 
 class ClientListView(generics.ListAPIView):
 
+    permission_classes = [IsAdminUser]
     queryset = Client.objects.only('client_name', 'sector', 'client_phone').all()
     serializer_class = ClientListSerializer
     pagination_class = CustomPagination
@@ -61,6 +62,7 @@ class ClientListView(generics.ListAPIView):
         
 
 class ClientCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUser]
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     parser_classes = [MultiPartParser]
@@ -94,7 +96,7 @@ class ClientCreateView(generics.ListCreateAPIView):
 
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-
+    permission_classes = [IsAdminUser]
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     lookup_field = 'pk'
@@ -151,7 +153,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeeShiftView(generics.GenericAPIView):
-
+    permission_classes = [IsAdminUser]
     serializer_class = ShiftEmpSerializer
 
     def post(self, request, *args, **kwargs):
@@ -170,13 +172,14 @@ class EmployeeShiftView(generics.GenericAPIView):
 
 
 class ShiftEmployeeList(generics.ListAPIView):
-
+    permission_classes = [IsAdminUser]
     queryset = ShiftEmployee.objects.filter(is_active=True)
     serializer_class = ShiftEmpListSerializer
     pagination_class = CustomPagination
 
 
 class ShiftEmployeeDetails(generics.GenericAPIView):
+    permission_classes = [IsAdminUser]
 
     def get(self, request, *args, **kwargs):
         queryset = get_object_or_404(ShiftEmployee, id=kwargs.get('pk'))
@@ -192,12 +195,14 @@ class ShiftEmployeeDetails(generics.GenericAPIView):
 
 
 class ClientOptionView(OptionMixin, generics.GenericAPIView):
+    permission_classes = [IsAdminUser]
 
     queryset = Client.objects.all()
     serializer_class = clientOptionSerializer
 
 
 class ClientEmpListView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
 
     queryset = Employee.objects.all()
     serializer_class = EmployeeCompanyListSerializer

@@ -8,7 +8,8 @@ from django.contrib.auth import authenticate
 from apps.account.mixins import LoginMixin, get_client_ip
 from apps.account.signals import user_token_logout
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import permission_classes
 
 
 class LoginAPIView(LoginMixin,
@@ -30,6 +31,8 @@ class RegisterUserView(CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@permission_classes([AllowAny])
 class LoginView(LoginAPIView):
 
     serializer_class = LoginSerializer

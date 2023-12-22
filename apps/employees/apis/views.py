@@ -10,10 +10,12 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from apps.clients.apis.views import CustomPagination
 from apps.employees.filters import EmployeeFilter
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 class EmployeeView(generics.ListCreateAPIView):
 
+    permission_classes = [IsAdminUser]
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     pagination_class = CustomPagination
@@ -43,7 +45,7 @@ class EmployeeView(generics.ListCreateAPIView):
 
 
 class EmployeeDetailsView(generics.RetrieveUpdateDestroyAPIView):
-
+    permission_classes = [IsAdminUser]
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     lookup_field = 'emp_id'
@@ -74,7 +76,7 @@ class EmployeeDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeeBankCreateView(generics.CreateAPIView):
-
+    permission_classes = [IsAdminUser]
     serializer_class = EmployeeBankSerializer
 
     def create(self, request, *args, **kwargs):
@@ -85,7 +87,7 @@ class EmployeeBankCreateView(generics.CreateAPIView):
 
 
 class EmployeeBankDetailView(generics.GenericAPIView):
-
+    permission_classes = [IsAdminUser]
     queryset = EmployeeBank.objects.all()
     serializer_class = EmployeeBankSerializer
 
