@@ -115,8 +115,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
         except Exception as e:
             return Response({"success": False, "data": str(e)})
 
-    def patch(self, request, *args, **kwargs):
-        print('pincode', request.data.get('client_logo', None))
+    def put(self, request, *args, **kwargs):
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -131,8 +130,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             "service": json.loads(request.data.get('service')),
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
-            "billing_type": request.data.get('billing_type'),
-            "client_logo": request.data.get('client_logo', None)
+            "billing_type": request.data.get('billing_type')
         }
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=True)
