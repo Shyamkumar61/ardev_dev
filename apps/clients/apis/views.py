@@ -130,7 +130,8 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             "service": json.loads(request.data.get('service')),
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
-            "billing_type": request.data.get('billing_type')
+            "billing_type": request.data.get('billing_type'),
+            "client_logo": request.data.get('client_logo', None)
         }
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=True)
