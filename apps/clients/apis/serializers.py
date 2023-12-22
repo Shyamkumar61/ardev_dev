@@ -46,8 +46,9 @@ class ClientSerializer(serializers.ModelSerializer):
 
     def validate_client_phone(self, value):
         phone_number_pattern = re.compile(r'^\d{10}$')
-        if not value:
-            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+        instance = self.instance
+        if not instance and Client.objects.filter(client_phone=value).exists():
+            raise serializers.ValidationError("Client Phone Number Already Exists")
         elif len(value) < 10 or len(value) > 10:
             raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
         elif not phone_number_pattern.match(value):
@@ -82,8 +83,9 @@ class ClientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Please Enter a Pincode")
         if len(attrs) != 6:
             raise serializers.ValidationError("Please Enter a valid Pincode")
-        if not pincode_pattern.match(attrs):
+        if attrs and not pincode_pattern.match(attrs):
             raise serializers.ValidationError("Pincode must be Numbers")
+        return attrs
 
     def validate_billing_type(self, value):
         if not value:

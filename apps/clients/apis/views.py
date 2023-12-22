@@ -66,6 +66,7 @@ class ClientCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
+        print('pincode', request.data.get('client_logo', None))
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -76,7 +77,7 @@ class ClientCreateView(generics.ListCreateAPIView):
             "client_phone": request.data.get('client_phone'),
             "client_address": request.data.get('client_address'),
             "client_city": request.data.get('client_city'),
-            "client_pincode": request.data.get('client_pincode'),
+            "client_pincode": request.data.get('client_pincode', None),
             "service": json.loads(request.data.get('service')),
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
@@ -114,8 +115,8 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
         except Exception as e:
             return Response({"success": False, "data": str(e)})
 
-    def put(self, request, *args, **kwargs):
-        print(request.data.get('client_logo', None))
+    def patch(self, request, *args, **kwargs):
+        print('pincode', request.data.get('client_logo', None))
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
@@ -134,7 +135,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             "client_logo": request.data.get('client_logo', None)
         }
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data)
+        serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'success': True, "data": serializer.data}, status=status.HTTP_200_OK)
