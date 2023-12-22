@@ -131,10 +131,9 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
             "designation": json.loads(request.data.get('designation')),
             "lut_tenure": request.data.get('lut_tenure'),
             "billing_type": request.data.get('billing_type'),
-            "client_logo": request.data.get('client_logo', None)
         }
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data, partial=True)
+        serializer = self.get_serializer(instance, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response({'success': True, "data": serializer.data}, status=status.HTTP_200_OK)

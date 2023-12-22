@@ -198,9 +198,8 @@ class EmployeeCompanyListSerializer(serializers.ModelSerializer):
 class EmployeeBankSerializer(serializers.ModelSerializer):
 
     def validate_employee(self, value):
-        if not value:
-            raise serializers.ValidationError("Please Assing a Employee")
-        if value and EmployeeBank.objects.filter(employee=value).exists():
+        instance = self.instance
+        if value and not instance and EmployeeBank.objects.filter(employee=value).exists():
             raise serializers.ValidationError("This Employee Already has Bank Assingned")
         return value
 
@@ -219,8 +218,9 @@ class EmployeeBankSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        instance = self.instance
         acc_num = attrs.get('accountNumber')
-        if EmployeeBank.objects.filter(accountNumber=acc_num).exists():
+        if not instance and EmployeeBank.objects.filter(accountNumber=acc_num).exists():
             raise serializers.ValidationError("Account Number Already Exists")
         return attrs
 
@@ -230,6 +230,6 @@ class EmployeeBankSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['bank'] = instance.bank.bank_name
+        response['bank'] = {"value": instance.bank.id, "label": instance.bank.bank_name}
         response['employee'] = instance.employee.name
         return response
