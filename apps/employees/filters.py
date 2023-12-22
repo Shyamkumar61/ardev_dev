@@ -6,7 +6,8 @@ from apps.employees.models import Employee
 class EmployeeFilter(django_filters.FilterSet):
 
     emp_id = django_filters.CharFilter(field_name='emp_id', lookup_expr='iexact')
-    company = django_filters.CharFilter(field_name='current_company__client_name', lookup_expr='icontains')
+    name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
+    company = django_filters.CharFilter(field_name='current_company__id', lookup_expr='icontains')
 
     class Meta:
         model = Employee
