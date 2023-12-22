@@ -68,11 +68,10 @@ class ClientCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        print('pincode', request.data.get('client_logo', None))
         data = {
             "client_name": request.data.get('client_name'),
             "sector": request.data.get('sector'),
-            "client_gst": request.data.get('client_gst'),
+            "client_gst": request.data.get('client_gst', None),
             "contract_singed": request.data.get('contract_singed'),
             "contract_period": request.data.get('contract_period'),
             "client_email": request.data.get('client_email'),

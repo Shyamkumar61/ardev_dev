@@ -57,8 +57,7 @@ class ClientSerializer(serializers.ModelSerializer):
         return value
 
     def validate_client_gst(self, value):
-        instance = self.instance
-        if value != 'null':
+        if value and value != 'null':
             if len(value) != 15:
                 raise serializers.ValidationError("Gst Number Should have 15 Characters")
             if not re.match(r'^[a-zA-Z0-9]*$', value):
