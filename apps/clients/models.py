@@ -42,7 +42,7 @@ class Client(TimeStampedModel):
     contract_singed = models.DateField(blank=True, null=True)
     contract_period = models.DateField(blank=True, null=True)
     client_email = models.EmailField(blank=True, null=True)
-    client_phone = models.CharField(max_length=20, null=True, blank=True)
+    client_phone = models.CharField(max_length=20, null=True, blank=True, unique=True)
     client_address = models.TextField()
     client_city = models.CharField(max_length=50, blank=True, null=True)
     client_pincode = models.CharField(max_length=50, blank=True, null=True)

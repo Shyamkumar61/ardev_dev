@@ -49,9 +49,9 @@ class ClientSerializer(serializers.ModelSerializer):
         instance = self.instance
         if not instance and Client.objects.filter(client_phone=value).exists():
             raise serializers.ValidationError("Client Phone Number Already Exists")
-        elif len(value) < 10 or len(value) > 10:
+        elif value and len(value) < 10 or len(value) > 10:
             raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
-        elif not phone_number_pattern.match(value):
+        elif value and not phone_number_pattern.match(value):
             raise serializers.ValidationError(
                 {"message": "Phone Number cannot contain Alphabets or Special Charaters"})
         return value
