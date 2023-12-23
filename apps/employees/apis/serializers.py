@@ -76,7 +76,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def validate_phone_no(self, value):
         phone_number_pattern = re.compile(r'^\d{10}$')
         if not value:
-            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+            raise serializers.ValidationError("Phone Number Cannot be Empty")
         elif len(value) < 10 or len(value) > 10:
             raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
         elif not phone_number_pattern.match(value):
@@ -87,7 +87,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def validate_whatsappNum(self, value):
         phone_number_pattern = re.compile(r'^\d{10}$')
         if not value:
-            raise serializers.ValidationError("Client Phone Number Cannot be Empty")
+            raise serializers.ValidationError("Whatsapp Number Cannot be Empty")
         elif len(value) < 10 or len(value) > 10:
             raise serializers.ValidationError({"message": "Invalid phone number format. Please enter a 10-digit number."})
         elif not phone_number_pattern.match(value):
@@ -212,6 +212,8 @@ class EmployeeBankSerializer(serializers.ModelSerializer):
     def validate_accountNumber(self, value):
         if not value:
             raise serializers.ValidationError("Account Number Field Cannot be empty")
+        if len(value) < 11 or len(value) > 16:
+            raise serializers.ValidationError("Account Number Should have atleast 16 Number")
         if value and not re.match(r'^[0-9]{11,16}$', value):
             raise serializers.ValidationError("Account Number Cannot be String or Special Characters")
         return value
