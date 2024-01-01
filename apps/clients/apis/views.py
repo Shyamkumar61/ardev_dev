@@ -39,6 +39,16 @@ class CustomPagination(PageNumberPagination):
         ]))
 
 
+class ClientFilterView(OptionMixin, generics.GenericAPIView):
+
+    serializer_class = clientOptionSerializer
+
+    def get_queryset(self):
+        sector = self.request.GET.get('sector', None)
+        queryset = Client.objects.filter(sector=sector)
+        return queryset
+
+
 class ClientListView(generics.ListAPIView):
 
     permission_classes = [IsAdminUser]
